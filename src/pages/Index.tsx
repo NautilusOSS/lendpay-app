@@ -8,6 +8,7 @@ import { Step3Repayment } from "@/components/lendpay/steps/Step3Repayment";
 import { Step4Connect } from "@/components/lendpay/steps/Step4Connect";
 import { Step5Confirm } from "@/components/lendpay/steps/Step5Confirm";
 import { Step6Trace } from "@/components/lendpay/steps/Step6Trace";
+import { checkSiteVersion } from "@/lib/versionCheck";
 
 // Bump this when icons change. We notify the user once per icon version
 // so they know to hard-reload if their browser is still showing the old mark.
@@ -25,6 +26,9 @@ const Index = () => {
   // One-time notice (per ICON_VERSION) that the LendPay icons have refreshed.
   // Offers a hard-reload action for browsers still serving the cached copy.
   useEffect(() => {
+    // Cache-bust check: prompts a hard reload if the deployed site
+    // version differs from what this browser last saw.
+    checkSiteVersion();
     try {
       if (localStorage.getItem(ICON_NOTICE_KEY)) return;
     } catch {
