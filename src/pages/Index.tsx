@@ -99,6 +99,7 @@ const Index = () => {
             {step === 3 && <Step4Connect onNext={() => goTo(4)} onBack={() => goTo(2)} />}
             {step === 4 && (
               <Step5Pack
+                repayAmount={amount}
                 initialPackId={pack?.id}
                 onNext={(p) => { setPack(p); goTo(5); }}
                 onBack={() => goTo(3)}
