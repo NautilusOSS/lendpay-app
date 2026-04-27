@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, ArrowLeft, Link2, Check, ShieldCheck } from "lucide-react";
 import { GlowButton } from "../GlowButton";
 import { ConnectWalletModal } from "../ConnectWalletModal";
@@ -8,17 +8,45 @@ interface Props {
   onBack: () => void;
 }
 
+const STORAGE_KEY = "lendpay:base-wallet";
+
+interface StoredWallet {
+  id: string;
+  name: string;
+  address: string;
+}
+
+const LABEL_MAP: Record<string, string> = {
+  walletconnect: "WalletConnect",
+  metamask: "MetaMask",
+  coinbase: "Coinbase Wallet",
+};
+
 export const Step4Connect = ({ onNext, onBack }: Props) => {
   const [open, setOpen] = useState(false);
-  const [wallet, setWallet] = useState<{ name: string; address: string } | null>(null);
+  const [wallet, setWallet] = useState<StoredWallet | null>(null);
+
+  // Restore last successful wallet on mount
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as StoredWallet;
+        if (parsed?.address && parsed?.name) setWallet(parsed);
+      }
+    } catch {
+      // ignore corrupted storage
+    }
+  }, []);
 
   const handleConnected = ({ wallet: id, address }: { wallet: string; address: string }) => {
-    const labelMap: Record<string, string> = {
-      walletconnect: "WalletConnect",
-      metamask: "MetaMask",
-      coinbase: "Coinbase Wallet",
-    };
-    setWallet({ name: labelMap[id] ?? "Wallet", address });
+    const next: StoredWallet = { id, name: LABEL_MAP[id] ?? "Wallet", address };
+    setWallet(next);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } catch {
+      // storage may be unavailable (private mode) — connection still works for this session
+    }
   };
 
   return (
