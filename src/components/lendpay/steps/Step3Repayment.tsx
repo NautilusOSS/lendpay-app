@@ -35,6 +35,33 @@ export const Step3Repayment = ({ onNext, onBack }: Props) => {
   const fmt = (n: number) =>
     n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 });
 
+  // Auto-recheck balance when the user returns to this tab after opening a top-up route.
+  useEffect(() => {
+    const handleReturn = () => {
+      if (!awaitingReturnRef.current) return;
+      if (document.visibilityState !== "visible") return;
+      awaitingReturnRef.current = false;
+      setPendingRecheck(true);
+      // small delay so on-chain balance has time to settle after a swap/withdrawal
+      const t = window.setTimeout(() => {
+        refetch();
+        // clear the indicator shortly after kicking off refetch
+        window.setTimeout(() => setPendingRecheck(false), 1500);
+      }, 800);
+      return () => window.clearTimeout(t);
+    };
+    document.addEventListener("visibilitychange", handleReturn);
+    window.addEventListener("focus", handleReturn);
+    return () => {
+      document.removeEventListener("visibilitychange", handleReturn);
+      window.removeEventListener("focus", handleReturn);
+    };
+  }, [refetch]);
+
+  const handleRouteOpened = () => {
+    awaitingReturnRef.current = true;
+  };
+
   return (
     <div className="glass-card p-8 md:p-10 animate-fade-in-up">
       <div className="flex items-center gap-3 mb-6">
