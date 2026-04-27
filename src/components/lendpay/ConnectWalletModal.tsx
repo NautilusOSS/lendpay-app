@@ -157,6 +157,7 @@ export const ConnectWalletModal = ({ open, onOpenChange, onConnected, onStatusCh
       setPhase("connecting");
       window.setTimeout(() => {
         const address = "0x84F2" + Math.random().toString(16).slice(2, 6).toUpperCase() + "...9e3A";
+        onStatusChange?.("connected");
         onConnected({ wallet: id, address });
         onOpenChange(false);
       }, 900);
