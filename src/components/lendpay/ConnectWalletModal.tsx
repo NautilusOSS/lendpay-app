@@ -100,6 +100,7 @@ export const ConnectWalletModal = ({ open, onOpenChange, onConnected }: Props) =
         setPhase("idle");
         setError(null);
         setErrorKind(null);
+        setRejection(null);
       }, 200);
       return () => clearTimeout(t);
     }
