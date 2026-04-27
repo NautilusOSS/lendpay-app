@@ -25,6 +25,7 @@ const LABEL_MAP: Record<string, string> = {
 export const Step4Connect = ({ onNext, onBack }: Props) => {
   const [open, setOpen] = useState(false);
   const [wallet, setWallet] = useState<StoredWallet | null>(null);
+  const [status, setStatus] = useState<ConnectionStatus>("idle");
 
   // Restore last successful wallet on mount
   useEffect(() => {
@@ -32,7 +33,10 @@ export const Step4Connect = ({ onNext, onBack }: Props) => {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as StoredWallet;
-        if (parsed?.address && parsed?.name) setWallet(parsed);
+        if (parsed?.address && parsed?.name) {
+          setWallet(parsed);
+          setStatus("connected");
+        }
       }
     } catch {
       // ignore corrupted storage
@@ -42,12 +46,17 @@ export const Step4Connect = ({ onNext, onBack }: Props) => {
   const handleConnected = ({ wallet: id, address }: { wallet: string; address: string }) => {
     const next: StoredWallet = { id, name: LABEL_MAP[id] ?? "Wallet", address };
     setWallet(next);
+    setStatus("connected");
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     } catch {
       // storage may be unavailable (private mode) — connection still works for this session
     }
   };
+
+  // Continue is locked while a connection attempt is mid-flight or in an error
+  // state. It re-enables only after a successful connection.
+  const continueDisabled = !wallet || status === "error" || status === "connecting";
 
   return (
     <div className="glass-card p-8 md:p-10 animate-fade-in-up">
