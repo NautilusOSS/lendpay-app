@@ -8,6 +8,7 @@ import { Step3Repayment } from "@/components/lendpay/steps/Step3Repayment";
 import { Step4Connect } from "@/components/lendpay/steps/Step4Connect";
 import { Step5Confirm } from "@/components/lendpay/steps/Step5Confirm";
 import { Step6Trace } from "@/components/lendpay/steps/Step6Trace";
+import { checkSiteVersion } from "@/lib/versionCheck";
 
 // Bump this when icons change. We notify the user once per icon version
 // so they know to hard-reload if their browser is still showing the old mark.
