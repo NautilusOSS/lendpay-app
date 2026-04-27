@@ -31,6 +31,12 @@
     <meta name="author" content="LendPay" />
     <meta name="keywords" content="LendPay, DeFi, USDC, Base, Algorand, cross-chain, loan repayment, KeeperHub, x402" />
 
+    <!-- Canonical URL. `__SITE_URL__` is replaced at build time by the
+         `lendpay-site-version` Vite plugin from VITE_SITE_URL (default
+         https://lendpay.app). Set VITE_SITE_URL in your env before publish
+         to point crawlers at your live origin. -->
+    <link rel="canonical" href="__SITE_URL__/" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -38,9 +44,10 @@
     <!-- Open Graph (Facebook, LinkedIn, Slack, Discord, etc.) -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="LendPay" />
+    <meta property="og:url" content="__SITE_URL__/" />
     <meta property="og:title" content="LendPay — Repay DeFi Loans on Any Chain with USDC" />
     <meta property="og:description" content="One simple workflow. Pay USDC on Base — KeeperHub agents handle execution on the destination chain. No wallet needed there." />
-    <meta property="og:image" content="/og-image.png?v=__SITE_VERSION__" />
+    <meta property="og:image" content="__SITE_URL__/og-image.png?v=__SITE_VERSION__" />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -49,9 +56,10 @@
 
     <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="__SITE_URL__/" />
     <meta name="twitter:title" content="LendPay — Repay DeFi Loans on Any Chain with USDC" />
     <meta name="twitter:description" content="One simple workflow. Pay USDC on Base — KeeperHub handles execution on the destination chain." />
-    <meta name="twitter:image" content="/og-image.png?v=__SITE_VERSION__" />
+    <meta name="twitter:image" content="__SITE_URL__/og-image.png?v=__SITE_VERSION__" />
     <meta name="twitter:image:alt" content="LendPay — Pay on Base · KeeperHub Agent · Execute Anywhere" />
   </head>
 
