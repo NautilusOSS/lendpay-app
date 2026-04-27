@@ -26,6 +26,9 @@ const Index = () => {
   // One-time notice (per ICON_VERSION) that the LendPay icons have refreshed.
   // Offers a hard-reload action for browsers still serving the cached copy.
   useEffect(() => {
+    // Cache-bust check: prompts a hard reload if the deployed site
+    // version differs from what this browser last saw.
+    checkSiteVersion();
     try {
       if (localStorage.getItem(ICON_NOTICE_KEY)) return;
     } catch {
