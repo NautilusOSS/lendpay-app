@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Check, Loader2, AlertCircle, Wallet, ShieldCheck, RefreshCw, X, Clock } from "lucide-react";
+import { Check, Loader2, Wallet, ShieldCheck, RefreshCw, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ErrorCard } from "./ErrorCard";
 
 type WalletId = "walletconnect" | "metamask" | "coinbase";
 
@@ -261,45 +262,23 @@ export const ConnectWalletModal = ({ open, onOpenChange, onConnected, onStatusCh
         )}
 
         {phase === "error" && activeWallet && (
-          <div className="p-6 flex flex-col items-center text-center">
-            <div
-              className={cn(
-                "h-14 w-14 rounded-2xl border flex items-center justify-center mb-4",
+          <div className="p-6 flex flex-col items-center">
+            <ErrorCard
+              tone={errorKind === "timeout" ? "warning" : "destructive"}
+              title={
                 errorKind === "timeout"
-                  ? "bg-warning/10 border-warning/30"
-                  : "bg-destructive/10 border-destructive/30",
-              )}
-            >
-              {errorKind === "timeout" ? (
-                <Clock className="h-7 w-7 text-warning" />
-              ) : (
-                <AlertCircle className="h-7 w-7 text-destructive" />
-              )}
-            </div>
-            <div className="text-sm font-semibold">
-              {errorKind === "timeout"
-                ? "Wallet didn't respond"
-                : rejection?.title ?? "Connection declined"}
-            </div>
-            <p className="text-xs text-muted-foreground mt-1.5 max-w-xs">{error}</p>
-
-            {errorKind === "declined" && rejection && (
-              <div className="mt-3 w-full rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-left">
-                <div className="flex items-start gap-2">
-                  <RefreshCw className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
-                  <p className="text-[11px] leading-relaxed text-foreground/80">
-                    <span className="font-medium text-foreground">How to fix: </span>
-                    {rejection.hint}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {errorKind === "declined" && rejection && (
-              <div className="mt-2 text-[10px] font-mono text-muted-foreground/70">
-                {activeWallet.name} · code {rejection.code}
-              </div>
-            )}
+                  ? "Wallet didn't respond"
+                  : rejection?.title ?? "Connection declined"
+              }
+              message={error ?? ""}
+              hint={errorKind === "declined" ? rejection?.hint : undefined}
+              meta={
+                errorKind === "declined" && rejection
+                  ? `${activeWallet.name} · code ${rejection.code}`
+                  : undefined
+              }
+              className="w-full"
+            />
 
             <div className="mt-5 flex items-center gap-2 w-full">
               <button

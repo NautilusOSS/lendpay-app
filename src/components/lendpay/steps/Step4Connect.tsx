@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, ArrowLeft, Link2, Check, ShieldCheck, AlertCircle } from "lucide-react";
+import { ArrowRight, ArrowLeft, Link2, Check, ShieldCheck } from "lucide-react";
 import { GlowButton } from "../GlowButton";
 import { ConnectWalletModal, type ConnectionStatus } from "../ConnectWalletModal";
+import { ErrorInline } from "../ErrorCard";
 
 interface Props {
   onNext: () => void;
@@ -114,10 +115,10 @@ export const Step4Connect = ({ onNext, onBack }: Props) => {
       </div>
 
       {status === "error" && (
-        <div className="mt-4 flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs text-destructive">
-          <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-          <span>Connection didn't complete. Resolve the prompt in the wallet modal to continue.</span>
-        </div>
+        <ErrorInline
+          className="mt-4"
+          message="Connection didn't complete. Resolve the prompt in the wallet modal to continue."
+        />
       )}
 
       <div className="mt-8 flex items-center justify-between">
