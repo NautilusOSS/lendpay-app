@@ -47,14 +47,16 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   shortfall: number;
+  onRouteOpened?: (routeId: string) => void;
 }
 
-export const TopUpRouteModal = ({ open, onOpenChange, shortfall }: Props) => {
+export const TopUpRouteModal = ({ open, onOpenChange, shortfall, onRouteOpened }: Props) => {
   const fmt = (n: number) =>
     n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 });
 
   const open_route = (route: Route) => {
     window.open(route.buildUrl(shortfall), "_blank", "noopener,noreferrer");
+    onRouteOpened?.(route.id);
     onOpenChange(false);
   };
 

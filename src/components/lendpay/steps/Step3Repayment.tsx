@@ -136,6 +136,11 @@ export const Step3Repayment = ({ onNext, onBack }: Props) => {
             <span className="text-xs uppercase tracking-wider text-muted-foreground">
               USDC balance · Base
             </span>
+            {pendingRecheck && (
+              <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-primary">
+                <Loader2 className="h-3 w-3 animate-spin" /> Rechecking
+              </span>
+            )}
           </div>
           {isConnected && (
             <button
@@ -209,7 +214,12 @@ export const Step3Repayment = ({ onNext, onBack }: Props) => {
         </GlowButton>
       </div>
 
-      <TopUpRouteModal open={topUpOpen} onOpenChange={setTopUpOpen} shortfall={shortfall} />
+      <TopUpRouteModal
+        open={topUpOpen}
+        onOpenChange={setTopUpOpen}
+        shortfall={shortfall}
+        onRouteOpened={handleRouteOpened}
+      />
     </div>
   );
 };
