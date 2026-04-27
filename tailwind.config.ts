@@ -31,6 +31,11 @@ export default {
           DEFAULT: "hsl(var(--warning))",
           foreground: "hsl(var(--warning-foreground))",
         },
+        brand: {
+          blue: "hsl(var(--brand-blue))",
+          violet: "hsl(var(--brand-violet))",
+          mint: "hsl(var(--brand-mint))",
+        },
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

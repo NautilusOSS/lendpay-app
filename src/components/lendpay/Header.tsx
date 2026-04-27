@@ -1,4 +1,4 @@
-import { Zap } from "lucide-react";
+import { LendPayLogo } from "./Logo";
 
 export const Header = () => {
   return (
@@ -6,27 +6,37 @@ export const Header = () => {
       <div className="max-w-5xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent blur-lg opacity-60" />
-            <div className="relative h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <Zap className="h-5 w-5 text-primary-foreground" strokeWidth={2.5} />
+            {/* Soft brand glow behind the mark */}
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-blue to-brand-violet blur-xl opacity-50" />
+            <div className="relative h-11 w-11 rounded-2xl bg-card/80 border border-border/60 backdrop-blur-md flex items-center justify-center">
+              <LendPayLogo className="h-7 w-7" />
             </div>
           </div>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight">LendPay</h1>
-            <p className="text-xs text-muted-foreground tracking-wide">Cross-chain repayments</p>
+          <div className="leading-tight">
+            <h1 className="text-xl font-bold tracking-tight">
+              Lend<span className="text-gradient">Pay</span>
+            </h1>
+            <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              Repay loans on any chain with USDC
+            </p>
           </div>
         </div>
-        <div className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-card/60 backdrop-blur-md border border-border/60">
+
+        <div className="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-card/60 backdrop-blur-md border border-border/60">
           <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
-          <span className="text-xs font-medium text-muted-foreground">Network active</span>
+          <span className="text-xs font-medium text-muted-foreground">
+            Powered by KeeperHub
+          </span>
         </div>
       </div>
-      <div className="max-w-5xl mx-auto mt-10 text-center">
+
+      <div className="max-w-5xl mx-auto mt-12 text-center">
         <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-          Repay Loans on <span className="text-gradient">Any Chain</span> with USDC
+          Repay DeFi loans on <span className="text-gradient">any chain</span> with USDC
         </h2>
         <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
-          Settle DeFi positions across networks in one flow. Pay with USDC on Base — we handle execution everywhere else.
+          One simple workflow. Pay USDC on Base — KeeperHub agents handle execution
+          on the destination chain. No wallet needed there.
         </p>
       </div>
     </header>

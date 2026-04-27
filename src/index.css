@@ -4,66 +4,77 @@
 
 @layer base {
   :root {
-    /* LendPay Dark Web3 Theme */
-    --background: 224 47% 6%;
-    --foreground: 210 40% 98%;
+    /* LendPay Brand Tokens
+       Palette (from brand guidelines):
+         Brand Blue   #3366FF  → 225 100% 60%
+         Brand Violet #7B5CFF  → 250 100% 68%
+         Brand Mint   #00D4A3  → 165 100% 42%
+         Surface 0    #0D1117  → 215 24%  7%
+         Surface 1    #E6EAF2  (light text)
+    */
+    --brand-blue: 225 100% 60%;
+    --brand-violet: 250 100% 68%;
+    --brand-mint: 165 100% 42%;
 
-    --card: 224 40% 9%;
-    --card-foreground: 210 40% 98%;
+    --background: 215 24% 7%;          /* #0D1117 */
+    --foreground: 220 25% 93%;         /* #E6EAF2 */
 
-    --popover: 224 40% 9%;
-    --popover-foreground: 210 40% 98%;
+    --card: 218 22% 10%;
+    --card-foreground: 220 25% 93%;
 
-    --primary: 217 91% 60%;
-    --primary-foreground: 224 47% 6%;
-    --primary-glow: 217 100% 70%;
+    --popover: 218 22% 10%;
+    --popover-foreground: 220 25% 93%;
 
-    --secondary: 224 35% 14%;
-    --secondary-foreground: 210 40% 98%;
+    --primary: 225 100% 60%;           /* brand blue */
+    --primary-foreground: 215 24% 7%;
+    --primary-glow: 225 100% 70%;
 
-    --muted: 224 30% 12%;
-    --muted-foreground: 215 20% 60%;
+    --secondary: 218 20% 14%;
+    --secondary-foreground: 220 25% 93%;
 
-    --accent: 265 89% 66%;
-    --accent-foreground: 210 40% 98%;
-    --accent-glow: 265 100% 75%;
+    --muted: 218 18% 12%;
+    --muted-foreground: 220 12% 62%;
 
-    --success: 142 71% 45%;
-    --success-foreground: 210 40% 98%;
+    --accent: 250 100% 68%;            /* brand violet */
+    --accent-foreground: 220 25% 93%;
+    --accent-glow: 250 100% 78%;
+
+    --success: 165 100% 42%;           /* brand mint */
+    --success-foreground: 215 24% 7%;
     --warning: 38 95% 58%;
     --warning-foreground: 222 47% 11%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 220 25% 93%;
 
-    --border: 224 30% 16%;
-    --input: 224 30% 14%;
-    --ring: 217 91% 60%;
+    --border: 218 20% 17%;
+    --input: 218 20% 14%;
+    --ring: 225 100% 60%;
 
     --radius: 1rem;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(265 89% 66%));
-    --gradient-glow: radial-gradient(circle at 50% 0%, hsl(217 91% 60% / 0.25), transparent 70%);
-    --gradient-card: linear-gradient(145deg, hsl(224 40% 11% / 0.8), hsl(224 47% 7% / 0.8));
-    --gradient-border: linear-gradient(135deg, hsl(217 91% 60% / 0.5), hsl(265 89% 66% / 0.5));
+    /* Gradients (brand) */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--brand-blue)), hsl(var(--brand-violet)));
+    --gradient-glow: radial-gradient(circle at 50% 0%, hsl(var(--brand-blue) / 0.28), transparent 70%);
+    --gradient-card: linear-gradient(145deg, hsl(218 22% 12% / 0.85), hsl(215 24% 7% / 0.85));
+    --gradient-border: linear-gradient(135deg, hsl(var(--brand-blue) / 0.55), hsl(var(--brand-violet) / 0.55));
 
     /* Shadows / Glows */
-    --shadow-glow: 0 0 40px hsl(217 91% 60% / 0.35);
-    --shadow-accent-glow: 0 0 50px hsl(265 89% 66% / 0.3);
-    --shadow-card: 0 20px 50px -20px hsl(224 80% 2% / 0.8);
+    --shadow-glow: 0 0 40px hsl(var(--brand-blue) / 0.4);
+    --shadow-accent-glow: 0 0 50px hsl(var(--brand-violet) / 0.32);
+    --shadow-card: 0 20px 50px -20px hsl(215 60% 2% / 0.85);
 
     /* Transitions */
     --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 224 47% 6%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 217 91% 60%;
-    --sidebar-primary-foreground: 224 47% 6%;
-    --sidebar-accent: 224 35% 14%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 224 30% 16%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-background: 215 24% 7%;
+    --sidebar-foreground: 220 25% 93%;
+    --sidebar-primary: 225 100% 60%;
+    --sidebar-primary-foreground: 215 24% 7%;
+    --sidebar-accent: 218 20% 14%;
+    --sidebar-accent-foreground: 220 25% 93%;
+    --sidebar-border: 218 20% 17%;
+    --sidebar-ring: 225 100% 60%;
   }
 }
 
@@ -80,9 +91,9 @@
   body {
     @apply bg-background text-foreground;
     background-image:
-      radial-gradient(ellipse 80% 50% at 50% -10%, hsl(217 91% 30% / 0.25), transparent),
-      radial-gradient(ellipse 60% 40% at 80% 80%, hsl(265 89% 40% / 0.15), transparent),
-      radial-gradient(ellipse 60% 40% at 10% 90%, hsl(217 91% 35% / 0.12), transparent);
+      radial-gradient(ellipse 80% 50% at 50% -10%, hsl(var(--brand-blue) / 0.22), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 80%, hsl(var(--brand-violet) / 0.16), transparent),
+      radial-gradient(ellipse 60% 40% at 10% 90%, hsl(var(--brand-mint) / 0.08), transparent);
     background-attachment: fixed;
     min-height: 100vh;
   }
