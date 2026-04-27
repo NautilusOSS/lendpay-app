@@ -179,6 +179,8 @@ export const Step3Repayment = ({ onNext, onBack }: Props) => {
           Continue <ArrowRight className="h-4 w-4" />
         </GlowButton>
       </div>
+
+      <TopUpRouteModal open={topUpOpen} onOpenChange={setTopUpOpen} shortfall={shortfall} />
     </div>
   );
 };
