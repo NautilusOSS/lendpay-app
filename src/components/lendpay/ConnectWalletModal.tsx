@@ -265,9 +265,29 @@ export const ConnectWalletModal = ({ open, onOpenChange, onConnected }: Props) =
               )}
             </div>
             <div className="text-sm font-semibold">
-              {errorKind === "timeout" ? "Wallet didn't respond" : "Connection declined"}
+              {errorKind === "timeout"
+                ? "Wallet didn't respond"
+                : rejection?.title ?? "Connection declined"}
             </div>
             <p className="text-xs text-muted-foreground mt-1.5 max-w-xs">{error}</p>
+
+            {errorKind === "declined" && rejection && (
+              <div className="mt-3 w-full rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-left">
+                <div className="flex items-start gap-2">
+                  <RefreshCw className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+                  <p className="text-[11px] leading-relaxed text-foreground/80">
+                    <span className="font-medium text-foreground">How to fix: </span>
+                    {rejection.hint}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {errorKind === "declined" && rejection && (
+              <div className="mt-2 text-[10px] font-mono text-muted-foreground/70">
+                {activeWallet.name} · code {rejection.code}
+              </div>
+            )}
 
             <div className="mt-5 flex items-center gap-2 w-full">
               <button
