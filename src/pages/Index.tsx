@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Header } from "@/components/lendpay/Header";
 import { StepProgress } from "@/components/lendpay/StepProgress";
 import { Step1Address } from "@/components/lendpay/steps/Step1Address";
@@ -8,6 +9,11 @@ import { Step4Connect } from "@/components/lendpay/steps/Step4Connect";
 import { Step5Confirm } from "@/components/lendpay/steps/Step5Confirm";
 import { Step6Trace } from "@/components/lendpay/steps/Step6Trace";
 
+// Bump this when icons change. We notify the user once per icon version
+// so they know to hard-reload if their browser is still showing the old mark.
+const ICON_VERSION = "2026-04-27";
+const ICON_NOTICE_KEY = `lendpay:icon-notice:${ICON_VERSION}`;
+
 const STEPS = ["Address", "Position", "Amount", "Connect", "Confirm", "Execute"];
 
 const Index = () => {
@@ -15,6 +21,36 @@ const Index = () => {
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
   const [, setAddress] = useState("");
   const [amount, setAmount] = useState(0.016465);
+
+  // One-time notice (per ICON_VERSION) that the LendPay icons have refreshed.
+  // Offers a hard-reload action for browsers still serving the cached copy.
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(ICON_NOTICE_KEY)) return;
+    } catch {
+      // localStorage may be unavailable — still show the toast this session
+    }
+
+    const t = window.setTimeout(() => {
+      toast("LendPay icons updated", {
+        description:
+          "Your favicon and home-screen icons may take a moment to refresh. If you still see the old mark, hard-reload the page.",
+        duration: 9000,
+        action: {
+          label: "Hard reload",
+          onClick: () => window.location.reload(),
+        },
+      });
+      try {
+        localStorage.setItem(ICON_NOTICE_KEY, "1");
+      } catch {
+        /* ignore */
+      }
+    }, 800);
+
+    return () => window.clearTimeout(t);
+  }, []);
+
 
   // Direction-aware navigation so the transition matches user intent:
   // forward → slide in from the right, backward → slide in from the left.
