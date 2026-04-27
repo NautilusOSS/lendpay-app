@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Header } from "@/components/lendpay/Header";
 import { StepProgress } from "@/components/lendpay/StepProgress";
 import { Step1Address } from "@/components/lendpay/steps/Step1Address";
@@ -7,6 +8,11 @@ import { Step3Repayment } from "@/components/lendpay/steps/Step3Repayment";
 import { Step4Connect } from "@/components/lendpay/steps/Step4Connect";
 import { Step5Confirm } from "@/components/lendpay/steps/Step5Confirm";
 import { Step6Trace } from "@/components/lendpay/steps/Step6Trace";
+
+// Bump this when icons change. We notify the user once per icon version
+// so they know to hard-reload if their browser is still showing the old mark.
+const ICON_VERSION = "2026-04-27";
+const ICON_NOTICE_KEY = `lendpay:icon-notice:${ICON_VERSION}`;
 
 const STEPS = ["Address", "Position", "Amount", "Connect", "Confirm", "Execute"];
 
