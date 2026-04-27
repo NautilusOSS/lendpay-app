@@ -1,13 +1,43 @@
 import { useState } from "react";
-import { ArrowRight, Wallet } from "lucide-react";
+import { ArrowRight, Wallet, AlertCircle } from "lucide-react";
 import { GlowButton } from "../GlowButton";
 
 interface Props {
   onNext: (address: string) => void;
 }
 
+const EVM_REGEX = /^0x[a-fA-F0-9]{40}$/;
+const ALGO_REGEX = /^[A-Z2-7]{58}$/;
+
+type AddressKind = "evm" | "algorand" | null;
+
+const detectAddress = (raw: string): AddressKind => {
+  const v = raw.trim();
+  if (EVM_REGEX.test(v)) return "evm";
+  if (ALGO_REGEX.test(v)) return "algorand";
+  return null;
+};
+
 export const Step1Address = ({ onNext }: Props) => {
   const [address, setAddress] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const trimmed = address.trim();
+  const kind = detectAddress(trimmed);
+  const isValid = kind !== null;
+
+  const handleSubmit = () => {
+    if (!trimmed) {
+      setError("Please enter a wallet address.");
+      return;
+    }
+    if (!isValid) {
+      setError("Invalid address. Use a 0x EVM address (42 chars) or an Algorand address (58 chars).");
+      return;
+    }
+    setError(null);
+    onNext(trimmed);
+  };
 
   return (
     <div className="glass-card p-8 md:p-10 animate-fade-in-up">
@@ -26,14 +56,35 @@ export const Step1Address = ({ onNext }: Props) => {
         <input
           autoFocus
           value={address}
-          onChange={(e) => setAddress(e.target.value)}
+          onChange={(e) => { setAddress(e.target.value); if (error) setError(null); }}
+          onKeyDown={(e) => { if (e.key === "Enter") handleSubmit(); }}
           placeholder="0x... or Algorand address"
-          className="mt-2 w-full bg-input/60 border border-border rounded-xl px-4 py-3.5 text-sm font-mono placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all"
+          aria-invalid={!!error}
+          className={`mt-2 w-full bg-input/60 border rounded-xl px-4 py-3.5 text-sm font-mono placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 transition-all ${
+            error
+              ? "border-destructive/60 focus:border-destructive focus:ring-destructive/20"
+              : "border-border focus:border-primary/60 focus:ring-primary/20"
+          }`}
         />
+        <div className="mt-2 min-h-[20px] text-xs">
+          {error ? (
+            <p className="flex items-center gap-1.5 text-destructive">
+              <AlertCircle className="h-3.5 w-3.5" /> {error}
+            </p>
+          ) : isValid ? (
+            <p className="text-primary/80">
+              Detected {kind === "evm" ? "EVM (0x)" : "Algorand"} address ✓
+            </p>
+          ) : (
+            <p className="text-muted-foreground/70">
+              Supports EVM (0x, 42 chars) and Algorand (58 chars) addresses.
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="mt-8 flex justify-end">
-        <GlowButton onClick={() => onNext(address || "ALGO...XYZ7")}>
+        <GlowButton onClick={handleSubmit} disabled={!isValid}>
           Continue <ArrowRight className="h-4 w-4" />
         </GlowButton>
       </div>
