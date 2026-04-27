@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, ArrowLeft, Coins, Wallet, AlertTriangle, CheckCircle2, RefreshCw, Loader2, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowLeft, Coins, Wallet, AlertTriangle, CheckCircle2, RefreshCw, Loader2, ArrowUpRight, Lightbulb } from "lucide-react";
 import { GlowButton } from "../GlowButton";
 import { cn } from "@/lib/utils";
 import { useUsdcBalance } from "@/hooks/useUsdcBalance";
@@ -201,6 +201,54 @@ export const Step3Repayment = ({ onNext, onBack }: Props) => {
                 </>
               )}
             </div>
+
+            {!hasEnough && (() => {
+              // Suggest the largest preset (full > custom-floor > interest) the wallet can actually afford.
+              const candidates = [
+                { id: "full" as Option, label: "Full Repayment", value: options.find((o) => o.id === "full")!.value },
+                { id: "interest" as Option, label: "Interest Only", value: options.find((o) => o.id === "interest")!.value },
+              ];
+              const affordable = candidates
+                .filter((c) => c.id !== selected && usdcBalance >= c.value + NETWORK_FEE)
+                .sort((a, b) => b.value - a.value)[0];
+
+              const maxCustom = Math.max(0, usdcBalance - NETWORK_FEE);
+              const canCustom = maxCustom > 0 && selected !== "custom";
+
+              if (!affordable && !canCustom) return null;
+
+              return (
+                <div className="flex items-start gap-2 rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-xs text-foreground">
+                  <Lightbulb className="h-3.5 w-3.5 mt-0.5 text-primary shrink-0" />
+                  <div className="flex-1 space-y-1.5">
+                    <div className="text-muted-foreground">
+                      Your balance can't cover the selected amount. Try a smaller repayment:
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {affordable && (
+                        <button
+                          onClick={() => setSelected(affordable.id)}
+                          className="inline-flex items-center gap-1 rounded-md border border-primary/40 bg-primary/10 px-2 py-1 font-semibold text-primary hover:bg-primary/20 transition-colors"
+                        >
+                          Switch to {affordable.label} ({fmt(affordable.value)} WAD)
+                        </button>
+                      )}
+                      {canCustom && (
+                        <button
+                          onClick={() => {
+                            setSelected("custom");
+                            setCustom(maxCustom.toFixed(2));
+                          }}
+                          className="inline-flex items-center gap-1 rounded-md border border-border bg-secondary/40 px-2 py-1 font-semibold hover:bg-secondary/60 transition-colors"
+                        >
+                          Use max affordable ({fmt(maxCustom)} WAD)
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </>
         )}
       </div>
