@@ -1,13 +1,15 @@
-import { ArrowLeft, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Sparkles, Package } from "lucide-react";
 import { GlowButton } from "../GlowButton";
+import type { Pack } from "@/lib/packs";
 
 interface Props {
   amount: number;
+  pack: Pack | null;
   onNext: () => void;
   onBack: () => void;
 }
 
-export const Step5Confirm = ({ amount, onNext, onBack }: Props) => {
+export const Step5Confirm = ({ amount, pack, onNext, onBack }: Props) => {
   return (
     <div className="glass-card p-8 md:p-10 animate-fade-in-up">
       <div className="flex items-center gap-3 mb-6">
