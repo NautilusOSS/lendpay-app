@@ -23,6 +23,14 @@ export const Step3Repayment = ({ onNext, onBack }: Props) => {
   const current = options.find((o) => o.id === selected)!;
   const amount = selected === "custom" ? Number(custom) || 0 : current.value;
 
+  const NETWORK_FEE = 0.05;
+  const required = amount + NETWORK_FEE;
+  const { isConnected, formatted: usdcBalance, isLoading, isError, refetch } = useUsdcBalance();
+  const hasEnough = isConnected && usdcBalance >= required;
+  const shortfall = Math.max(0, required - usdcBalance);
+  const fmt = (n: number) =>
+    n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 });
+
   return (
     <div className="glass-card p-8 md:p-10 animate-fade-in-up">
       <div className="flex items-center gap-3 mb-6">
