@@ -1,13 +1,15 @@
-import { ArrowLeft, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Sparkles, Package } from "lucide-react";
 import { GlowButton } from "../GlowButton";
+import type { Pack } from "@/lib/packs";
 
 interface Props {
   amount: number;
+  pack: Pack | null;
   onNext: () => void;
   onBack: () => void;
 }
 
-export const Step5Confirm = ({ amount, onNext, onBack }: Props) => {
+export const Step5Confirm = ({ amount, pack, onNext, onBack }: Props) => {
   return (
     <div className="glass-card p-8 md:p-10 animate-fade-in-up">
       <div className="flex items-center gap-3 mb-6">
@@ -37,6 +39,16 @@ export const Step5Confirm = ({ amount, onNext, onBack }: Props) => {
             <span className="text-muted-foreground">Pay with</span>
             <span className="font-semibold font-mono">USDC on Base</span>
           </div>
+          {pack && (
+            <div className="flex justify-between">
+              <span className="text-muted-foreground inline-flex items-center gap-1.5">
+                <Package className="h-3.5 w-3.5" /> Pack
+              </span>
+              <span className="font-semibold font-mono">
+                {pack.label} · {pack.amountUsdc} USDC
+              </span>
+            </div>
+          )}
           <div className="flex justify-between pt-3 border-t border-border/60">
             <span className="text-muted-foreground">Fee</span>
             <span className="font-semibold font-mono">0.05 USDC</span>
