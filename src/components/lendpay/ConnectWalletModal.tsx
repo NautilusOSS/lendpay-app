@@ -88,12 +88,20 @@ const REJECTION_REASONS: RejectionReason[] = [
   },
 ];
 
-export const ConnectWalletModal = ({ open, onOpenChange, onConnected }: Props) => {
+export const ConnectWalletModal = ({ open, onOpenChange, onConnected, onStatusChange }: Props) => {
   const [selected, setSelected] = useState<WalletId | null>(null);
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string | null>(null);
   const [errorKind, setErrorKind] = useState<"declined" | "timeout" | null>(null);
   const [rejection, setRejection] = useState<RejectionReason | null>(null);
+
+  // Notify parent of connection status so it can gate UI (e.g. Continue button)
+  useEffect(() => {
+    if (!onStatusChange) return;
+    if (phase === "error") onStatusChange("error");
+    else if (phase === "awaiting" || phase === "connecting") onStatusChange("connecting");
+    else onStatusChange("idle");
+  }, [phase, onStatusChange]);
 
   // Reset state whenever the modal closes
   useEffect(() => {
