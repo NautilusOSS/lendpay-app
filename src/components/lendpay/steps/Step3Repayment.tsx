@@ -157,57 +157,12 @@ export const Step3Repayment = ({ onNext, onBack }: Props) => {
                 <>
                   <AlertTriangle className="h-3.5 w-3.5" />
                   <span className="flex-1">Short by {fmt(shortfall)} USDC. Top up or lower the amount.</span>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="inline-flex items-center gap-1 rounded-md border border-destructive/40 bg-destructive/10 px-2 py-1 font-semibold hover:bg-destructive/20 transition-colors focus:outline-none focus:ring-2 focus:ring-destructive/40">
-                      Top up {fmt(shortfall)} USDC <ChevronDown className="h-3 w-3" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56">
-                      <DropdownMenuLabel className="text-xs">Acquire USDC on Base</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild>
-                        <a
-                          href={`https://app.uniswap.org/swap?chain=base&outputCurrency=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&exactField=output&exactAmount=${shortfall.toFixed(2)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-between gap-2 cursor-pointer"
-                        >
-                          <span>
-                            <span className="font-medium">Uniswap</span>
-                            <span className="block text-[10px] text-muted-foreground">Swap on Base · prefilled</span>
-                          </span>
-                          <ExternalLink className="h-3 w-3 opacity-60" />
-                        </a>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <a
-                          href="https://www.coinbase.com/how-to-buy/usdc"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-between gap-2 cursor-pointer"
-                        >
-                          <span>
-                            <span className="font-medium">Coinbase</span>
-                            <span className="block text-[10px] text-muted-foreground">Buy & withdraw to Base</span>
-                          </span>
-                          <ExternalLink className="h-3 w-3 opacity-60" />
-                        </a>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <a
-                          href="https://www.circle.com/en/usdc/developers"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-between gap-2 cursor-pointer"
-                        >
-                          <span>
-                            <span className="font-medium">Circle</span>
-                            <span className="block text-[10px] text-muted-foreground">Mint USDC natively</span>
-                          </span>
-                          <ExternalLink className="h-3 w-3 opacity-60" />
-                        </a>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <button
+                    onClick={() => setTopUpOpen(true)}
+                    className="inline-flex items-center gap-1 rounded-md border border-destructive/40 bg-destructive/10 px-2 py-1 font-semibold hover:bg-destructive/20 transition-colors focus:outline-none focus:ring-2 focus:ring-destructive/40"
+                  >
+                    Top up {fmt(shortfall)} USDC <ArrowUpRight className="h-3 w-3" />
+                  </button>
                 </>
               )}
             </div>
