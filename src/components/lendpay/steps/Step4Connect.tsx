@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, ArrowLeft, Link2, Check, ShieldCheck } from "lucide-react";
+import { ArrowRight, ArrowLeft, Link2, Check, ShieldCheck, AlertCircle } from "lucide-react";
 import { GlowButton } from "../GlowButton";
-import { ConnectWalletModal } from "../ConnectWalletModal";
+import { ConnectWalletModal, type ConnectionStatus } from "../ConnectWalletModal";
 
 interface Props {
   onNext: () => void;
