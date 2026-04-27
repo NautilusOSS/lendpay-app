@@ -33,8 +33,23 @@ function readSiteVersion(): string {
  * This keeps the manifest's icon URLs and the HTML <link> hrefs in lockstep
  * with the JS-side version check, so a single bump invalidates everything.
  */
+/**
+ * Resolve the canonical absolute site URL used for <link rel="canonical">,
+ * og:url, and twitter:url. Set VITE_SITE_URL in your environment (e.g.
+ * `https://lendpay.app`) before publishing. Falls back to a sensible default
+ * so the tags are always well-formed; no trailing slash, normalized scheme.
+ */
+function readSiteUrl(): string {
+  const raw =
+    process.env.VITE_SITE_URL ||
+    process.env.SITE_URL ||
+    "https://lendpay.app";
+  return raw.trim().replace(/\/+$/, "");
+}
+
 function siteVersionPlugin(): Plugin {
   const version = readSiteVersion();
+  const siteUrl = readSiteUrl();
   const manifestPath = path.resolve(
     __dirname,
     "public/site.webmanifest.tmpl",
@@ -46,7 +61,9 @@ function siteVersionPlugin(): Plugin {
   return {
     name: "lendpay-site-version",
     transformIndexHtml(html) {
-      return html.replace(/__SITE_VERSION__/g, version);
+      return html
+        .replace(/__SITE_VERSION__/g, version)
+        .replace(/__SITE_URL__/g, siteUrl);
     },
     configureServer(server) {
       // Serve the resolved manifest in dev so /site.webmanifest works without
