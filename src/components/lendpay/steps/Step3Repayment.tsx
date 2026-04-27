@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, ArrowLeft, Coins, Wallet, AlertTriangle, CheckCircle2, RefreshCw, Loader2, ArrowUpRight } from "lucide-react";
 import { GlowButton } from "../GlowButton";
 import { cn } from "@/lib/utils";
@@ -22,6 +22,8 @@ export const Step3Repayment = ({ onNext, onBack }: Props) => {
   const [selected, setSelected] = useState<Option>("interest");
   const [custom, setCustom] = useState("100");
   const [topUpOpen, setTopUpOpen] = useState(false);
+  const [pendingRecheck, setPendingRecheck] = useState(false);
+  const awaitingReturnRef = useRef(false);
   const current = options.find((o) => o.id === selected)!;
   const amount = selected === "custom" ? Number(custom) || 0 : current.value;
 
@@ -32,6 +34,33 @@ export const Step3Repayment = ({ onNext, onBack }: Props) => {
   const shortfall = Math.max(0, required - usdcBalance);
   const fmt = (n: number) =>
     n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 6 });
+
+  // Auto-recheck balance when the user returns to this tab after opening a top-up route.
+  useEffect(() => {
+    const handleReturn = () => {
+      if (!awaitingReturnRef.current) return;
+      if (document.visibilityState !== "visible") return;
+      awaitingReturnRef.current = false;
+      setPendingRecheck(true);
+      // small delay so on-chain balance has time to settle after a swap/withdrawal
+      const t = window.setTimeout(() => {
+        refetch();
+        // clear the indicator shortly after kicking off refetch
+        window.setTimeout(() => setPendingRecheck(false), 1500);
+      }, 800);
+      return () => window.clearTimeout(t);
+    };
+    document.addEventListener("visibilitychange", handleReturn);
+    window.addEventListener("focus", handleReturn);
+    return () => {
+      document.removeEventListener("visibilitychange", handleReturn);
+      window.removeEventListener("focus", handleReturn);
+    };
+  }, [refetch]);
+
+  const handleRouteOpened = () => {
+    awaitingReturnRef.current = true;
+  };
 
   return (
     <div className="glass-card p-8 md:p-10 animate-fade-in-up">
@@ -107,6 +136,11 @@ export const Step3Repayment = ({ onNext, onBack }: Props) => {
             <span className="text-xs uppercase tracking-wider text-muted-foreground">
               USDC balance · Base
             </span>
+            {pendingRecheck && (
+              <span className="inline-flex items-center gap-1 text-[10px] uppercase tracking-wider text-primary">
+                <Loader2 className="h-3 w-3 animate-spin" /> Rechecking
+              </span>
+            )}
           </div>
           {isConnected && (
             <button
@@ -180,7 +214,12 @@ export const Step3Repayment = ({ onNext, onBack }: Props) => {
         </GlowButton>
       </div>
 
-      <TopUpRouteModal open={topUpOpen} onOpenChange={setTopUpOpen} shortfall={shortfall} />
+      <TopUpRouteModal
+        open={topUpOpen}
+        onOpenChange={setTopUpOpen}
+        shortfall={shortfall}
+        onRouteOpened={handleRouteOpened}
+      />
     </div>
   );
 };
