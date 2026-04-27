@@ -204,10 +204,23 @@ export const ConnectWalletModal = ({ open, onOpenChange, onConnected }: Props) =
 
         {phase === "error" && activeWallet && (
           <div className="p-6 flex flex-col items-center text-center">
-            <div className="h-14 w-14 rounded-2xl bg-destructive/10 border border-destructive/30 flex items-center justify-center mb-4">
-              <AlertCircle className="h-7 w-7 text-destructive" />
+            <div
+              className={cn(
+                "h-14 w-14 rounded-2xl border flex items-center justify-center mb-4",
+                errorKind === "timeout"
+                  ? "bg-warning/10 border-warning/30"
+                  : "bg-destructive/10 border-destructive/30",
+              )}
+            >
+              {errorKind === "timeout" ? (
+                <Clock className="h-7 w-7 text-warning" />
+              ) : (
+                <AlertCircle className="h-7 w-7 text-destructive" />
+              )}
             </div>
-            <div className="text-sm font-semibold">Connection declined</div>
+            <div className="text-sm font-semibold">
+              {errorKind === "timeout" ? "Wallet didn't respond" : "Connection declined"}
+            </div>
             <p className="text-xs text-muted-foreground mt-1.5 max-w-xs">{error}</p>
 
             <div className="mt-5 flex items-center gap-2 w-full">
