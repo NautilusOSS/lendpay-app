@@ -54,9 +54,22 @@ function siteVersionPlugin(): Plugin {
     __dirname,
     "public/site.webmanifest.tmpl",
   );
+  const sitemapPath = path.resolve(__dirname, "public/sitemap.xml.tmpl");
+  const robotsPath = path.resolve(__dirname, "public/robots.txt");
 
   const renderManifest = () =>
     fs.readFileSync(manifestPath, "utf8").replace(/__SITE_VERSION__/g, version);
+
+  const renderSitemap = () =>
+    fs
+      .readFileSync(sitemapPath, "utf8")
+      .replace(/__SITE_URL__/g, siteUrl)
+      .replace(/__SITE_VERSION__/g, version);
+
+  // robots.txt is a static asset Vite normally copies verbatim from /public.
+  // We rewrite __SITE_URL__ on the way out so the Sitemap: line is absolute.
+  const renderRobots = () =>
+    fs.readFileSync(robotsPath, "utf8").replace(/__SITE_URL__/g, siteUrl);
 
   return {
     name: "lendpay-site-version",
@@ -66,23 +79,47 @@ function siteVersionPlugin(): Plugin {
         .replace(/__SITE_URL__/g, siteUrl);
     },
     configureServer(server) {
-      // Serve the resolved manifest in dev so /site.webmanifest works without
-      // needing a build step.
+      // Serve the resolved manifest, sitemap, and robots in dev so they work
+      // without needing a build step.
       server.middlewares.use((req, res, next) => {
         if (!req.url) return next();
         const url = req.url.split("?")[0];
-        if (url !== "/site.webmanifest") return next();
-        res.setHeader("Content-Type", "application/manifest+json");
-        res.setHeader("Cache-Control", "no-cache, must-revalidate");
-        res.end(renderManifest());
+        if (url === "/site.webmanifest") {
+          res.setHeader("Content-Type", "application/manifest+json");
+          res.setHeader("Cache-Control", "no-cache, must-revalidate");
+          return res.end(renderManifest());
+        }
+        if (url === "/sitemap.xml") {
+          res.setHeader("Content-Type", "application/xml; charset=utf-8");
+          res.setHeader("Cache-Control", "no-cache, must-revalidate");
+          return res.end(renderSitemap());
+        }
+        if (url === "/robots.txt") {
+          res.setHeader("Content-Type", "text/plain; charset=utf-8");
+          res.setHeader("Cache-Control", "no-cache, must-revalidate");
+          return res.end(renderRobots());
+        }
+        return next();
       });
     },
     generateBundle() {
-      // Emit the resolved manifest into the build output.
+      // Emit the resolved manifest, sitemap, and robots into the build output.
+      // robots.txt is also copied as-is from /public by Vite — emitting it
+      // here overrides that copy with the __SITE_URL__-substituted version.
       this.emitFile({
         type: "asset",
         fileName: "site.webmanifest",
         source: renderManifest(),
+      });
+      this.emitFile({
+        type: "asset",
+        fileName: "sitemap.xml",
+        source: renderSitemap(),
+      });
+      this.emitFile({
+        type: "asset",
+        fileName: "robots.txt",
+        source: renderRobots(),
       });
     },
   };
