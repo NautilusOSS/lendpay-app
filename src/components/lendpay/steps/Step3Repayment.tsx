@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowRight, ArrowLeft, Coins, Wallet, AlertTriangle, CheckCircle2, RefreshCw, Loader2 } from "lucide-react";
+import { ArrowRight, ArrowLeft, Coins, Wallet, AlertTriangle, CheckCircle2, RefreshCw, Loader2, ExternalLink } from "lucide-react";
 import { GlowButton } from "../GlowButton";
 import { cn } from "@/lib/utils";
 import { useUsdcBalance } from "@/hooks/useUsdcBalance";
