@@ -39,10 +39,13 @@ const WALLETS: WalletOption[] = [
   },
 ];
 
+export type ConnectionStatus = "idle" | "connecting" | "connected" | "error";
+
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConnected: (info: { wallet: WalletId; address: string }) => void;
+  onStatusChange?: (status: ConnectionStatus) => void;
 }
 
 const APPROVAL_TIMEOUT_MS = 20_000;
