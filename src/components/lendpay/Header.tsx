@@ -1,4 +1,5 @@
 import { LendPayLogo } from "./Logo";
+import { WalletPill } from "./WalletPill";
 
 export const Header = () => {
   return (
@@ -22,11 +23,14 @@ export const Header = () => {
           </div>
         </div>
 
-        <div className="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-card/60 backdrop-blur-md border border-border/60">
-          <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
-          <span className="text-xs font-medium text-muted-foreground">
-            Powered by KeeperHub
-          </span>
+        <div className="flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-card/60 backdrop-blur-md border border-border/60">
+            <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
+            <span className="text-xs font-medium text-muted-foreground">
+              Powered by KeeperHub
+            </span>
+          </div>
+          <WalletPill />
         </div>
       </div>
 
