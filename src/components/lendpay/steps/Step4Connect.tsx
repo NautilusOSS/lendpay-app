@@ -92,7 +92,7 @@ export const Step4Connect = ({ onNext, onBack }: Props) => {
       <ConnectWalletModal
         open={open}
         onOpenChange={setOpen}
-        onConnected={handleConnected}
+        onConnected={setConnected}
         onStatusChange={setStatus}
       />
     </div>
