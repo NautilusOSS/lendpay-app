@@ -1,5 +1,5 @@
 # Robots policy. The absolute Sitemap URL below is rewritten at build/dev
-# time by the `lendpay-site-version` Vite plugin (__SITE_URL__ → VITE_SITE_URL).
+# time by the lendpay-site-version Vite plugin from the VITE_SITE_URL env var.
 User-agent: Googlebot
 Allow: /
 
