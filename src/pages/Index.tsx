@@ -22,6 +22,36 @@ const Index = () => {
   const [, setAddress] = useState("");
   const [amount, setAmount] = useState(0.016465);
 
+  // One-time notice (per ICON_VERSION) that the LendPay icons have refreshed.
+  // Offers a hard-reload action for browsers still serving the cached copy.
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(ICON_NOTICE_KEY)) return;
+    } catch {
+      // localStorage may be unavailable — still show the toast this session
+    }
+
+    const t = window.setTimeout(() => {
+      toast("LendPay icons updated", {
+        description:
+          "Your favicon and home-screen icons may take a moment to refresh. If you still see the old mark, hard-reload the page.",
+        duration: 9000,
+        action: {
+          label: "Hard reload",
+          onClick: () => window.location.reload(),
+        },
+      });
+      try {
+        localStorage.setItem(ICON_NOTICE_KEY, "1");
+      } catch {
+        /* ignore */
+      }
+    }, 800);
+
+    return () => window.clearTimeout(t);
+  }, []);
+
+
   // Direction-aware navigation so the transition matches user intent:
   // forward → slide in from the right, backward → slide in from the left.
   const goTo = (next: number) => {
