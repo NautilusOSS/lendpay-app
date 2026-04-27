@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { ArrowRight, ArrowLeft, Link2, Check } from "lucide-react";
+import { ArrowRight, ArrowLeft, Link2, Check, ShieldCheck } from "lucide-react";
 import { GlowButton } from "../GlowButton";
+import { ConnectWalletModal } from "../ConnectWalletModal";
 
 interface Props {
   onNext: () => void;
@@ -8,15 +9,16 @@ interface Props {
 }
 
 export const Step4Connect = ({ onNext, onBack }: Props) => {
-  const [connected, setConnected] = useState(false);
-  const [connecting, setConnecting] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [wallet, setWallet] = useState<{ name: string; address: string } | null>(null);
 
-  const handleConnect = () => {
-    setConnecting(true);
-    setTimeout(() => {
-      setConnecting(false);
-      setConnected(true);
-    }, 1200);
+  const handleConnected = ({ wallet: id, address }: { wallet: string; address: string }) => {
+    const labelMap: Record<string, string> = {
+      walletconnect: "WalletConnect",
+      metamask: "MetaMask",
+      coinbase: "Coinbase Wallet",
+    };
+    setWallet({ name: labelMap[id] ?? "Wallet", address });
   };
 
   return (
@@ -35,29 +37,41 @@ export const Step4Connect = ({ onNext, onBack }: Props) => {
         <div className="relative mb-4">
           <div className="absolute inset-0 bg-primary/30 blur-2xl" />
           <div className="relative h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-            {connected ? <Check className="h-8 w-8 text-primary-foreground" strokeWidth={3} /> : <Link2 className="h-8 w-8 text-primary-foreground" />}
+            {wallet ? (
+              <Check className="h-8 w-8 text-primary-foreground" strokeWidth={3} />
+            ) : (
+              <Link2 className="h-8 w-8 text-primary-foreground" />
+            )}
           </div>
         </div>
 
-        {connected ? (
+        {wallet ? (
           <>
-            <div className="text-sm font-semibold">Wallet connected</div>
-            <div className="text-xs font-mono text-muted-foreground mt-1">0x84F2...9e3A · Base</div>
+            <div className="text-sm font-semibold">{wallet.name} connected</div>
+            <div className="text-xs font-mono text-muted-foreground mt-1">{wallet.address} · Base</div>
             <div className="mt-2 px-3 py-1 rounded-full bg-success/10 text-success text-xs border border-success/20">
               Ready to pay
             </div>
+            <button
+              onClick={() => setOpen(true)}
+              className="mt-3 text-xs text-muted-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
+            >
+              Switch wallet
+            </button>
           </>
         ) : (
           <>
             <div className="text-sm font-semibold">Choose a wallet</div>
             <div className="text-xs text-muted-foreground mt-1">WalletConnect · MetaMask · Coinbase</div>
             <button
-              onClick={handleConnect}
-              disabled={connecting}
-              className="mt-5 px-5 py-2.5 rounded-xl text-sm font-semibold border border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 transition-all duration-300 disabled:opacity-60"
+              onClick={() => setOpen(true)}
+              className="mt-5 px-5 py-2.5 rounded-xl text-sm font-semibold border border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 hover:shadow-[0_0_20px_hsl(var(--primary)/0.4)] transition-all duration-300"
             >
-              {connecting ? "Connecting..." : "Connect Base Wallet"}
+              Connect Base Wallet
             </button>
+            <div className="mt-4 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+              <ShieldCheck className="h-3 w-3 text-success" /> Non-custodial · You approve every transfer
+            </div>
           </>
         )}
       </div>
@@ -66,10 +80,12 @@ export const Step4Connect = ({ onNext, onBack }: Props) => {
         <GlowButton variant="ghost" onClick={onBack}>
           <ArrowLeft className="h-4 w-4" /> Back
         </GlowButton>
-        <GlowButton onClick={onNext} disabled={!connected}>
+        <GlowButton onClick={onNext} disabled={!wallet}>
           Continue <ArrowRight className="h-4 w-4" />
         </GlowButton>
       </div>
+
+      <ConnectWalletModal open={open} onOpenChange={setOpen} onConnected={handleConnected} />
     </div>
   );
 };
