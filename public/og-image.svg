@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0D1117"/>
+      <stop offset="100%" stop-color="#0A1230"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3366FF"/>
+      <stop offset="100%" stop-color="#7B5CFF"/>
+    </linearGradient>
+    <radialGradient id="glow1" cx="0.2" cy="0.2" r="0.6">
+      <stop offset="0%" stop-color="#3366FF" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#3366FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0.85" cy="0.9" r="0.55">
+      <stop offset="0%" stop-color="#7B5CFF" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#7B5CFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow3" cx="0.95" cy="0.1" r="0.45">
+      <stop offset="0%" stop-color="#00D4A3" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#00D4A3" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow1)"/>
+  <rect width="1200" height="630" fill="url(#glow2)"/>
+  <rect width="1200" height="630" fill="url(#glow3)"/>
+
+  <!-- Brand mark in a rounded tile, left side -->
+  <g transform="translate(96 195)">
+    <rect width="240" height="240" rx="48" fill="#0D1117" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+    <g transform="translate(20 20) scale(3.125)">
+      <path d="M14 10 H22 V44 H38 V52 H14 Z" fill="url(#mark)"/>
+      <path d="M30 10 H42 a12 12 0 0 1 0 24 H38 V26 H42 a4 4 0 0 0 0 -8 H38 V42 H30 Z" fill="url(#mark)"/>
+      <path d="M32 40 H48 L48 36 L58 44 L48 52 L48 48 H32 Z" fill="url(#mark)"/>
+    </g>
+  </g>
+
+  <!-- Wordmark + tagline -->
+  <g font-family="Inter, system-ui, -apple-system, Segoe UI, sans-serif" fill="#E6EAF2">
+    <text x="380" y="290" font-size="92" font-weight="800" letter-spacing="-2">
+      <tspan fill="#E6EAF2">Lend</tspan><tspan fill="url(#mark)">Pay</tspan>
+    </text>
+    <text x="380" y="350" font-size="32" font-weight="500" fill="#9BA3B4" letter-spacing="0.5">
+      Repay DeFi loans on any chain with USDC.
+    </text>
+
+    <!-- Pipeline pills -->
+    <g transform="translate(380 410)" font-size="20" font-weight="600">
+      <g>
+        <rect width="170" height="46" rx="23" fill="rgba(51,102,255,0.12)" stroke="rgba(51,102,255,0.4)"/>
+        <circle cx="26" cy="23" r="6" fill="#3366FF"/>
+        <text x="46" y="30" fill="#3366FF">Pay on Base</text>
+      </g>
+      <g transform="translate(186 0)">
+        <rect width="200" height="46" rx="23" fill="rgba(123,92,255,0.12)" stroke="rgba(123,92,255,0.4)"/>
+        <circle cx="26" cy="23" r="6" fill="#7B5CFF"/>
+        <text x="46" y="30" fill="#7B5CFF">KeeperHub Agent</text>
+      </g>
+      <g transform="translate(402 0)">
+        <rect width="190" height="46" rx="23" fill="rgba(0,212,163,0.12)" stroke="rgba(0,212,163,0.4)"/>
+        <circle cx="26" cy="23" r="6" fill="#00D4A3"/>
+        <text x="46" y="30" fill="#00D4A3">Execute Anywhere</text>
+      </g>
+    </g>
+
+    <!-- Footer line -->
+    <text x="96" y="580" font-size="20" font-weight="500" fill="#6B7280" letter-spacing="2">
+      LENDPAY  ·  POWERED BY KEEPERHUB
+    </text>
+  </g>
+</svg>
