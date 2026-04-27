@@ -110,6 +110,7 @@ export const ConnectWalletModal = ({ open, onOpenChange, onConnected }: Props) =
     setSelected(id);
     setError(null);
     setErrorKind(null);
+    setRejection(null);
     setPhase("awaiting");
 
     // Simulate the wallet handshake: awaiting approval -> connecting -> result
@@ -122,6 +123,7 @@ export const ConnectWalletModal = ({ open, onOpenChange, onConnected }: Props) =
     const timeoutId = window.setTimeout(() => {
       setPhase("error");
       setErrorKind("timeout");
+      setRejection(null);
       setError(
         "We didn't receive a response from your wallet in time. Open your wallet app, check for a pending request, then try again.",
       );
@@ -133,9 +135,12 @@ export const ConnectWalletModal = ({ open, onOpenChange, onConnected }: Props) =
       window.clearTimeout(timeoutId);
 
       if (declined) {
+        // Pick a specific rejection reason so the user knows what to fix
+        const reason = REJECTION_REASONS[Math.floor(Math.random() * REJECTION_REASONS.length)];
         setPhase("error");
         setErrorKind("declined");
-        setError("Connection request was rejected in your wallet. Please try again to continue.");
+        setRejection(reason);
+        setError(reason.message);
         return;
       }
       setPhase("connecting");
@@ -151,6 +156,7 @@ export const ConnectWalletModal = ({ open, onOpenChange, onConnected }: Props) =
     setPhase("idle");
     setError(null);
     setErrorKind(null);
+    setRejection(null);
     setSelected(null);
   };
 
