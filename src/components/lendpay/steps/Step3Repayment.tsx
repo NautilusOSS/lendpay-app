@@ -157,12 +157,12 @@ export const Step3Repayment = ({ onNext, onBack }: Props) => {
                   <AlertTriangle className="h-3.5 w-3.5" />
                   <span className="flex-1">Short by {fmt(shortfall)} USDC. Top up or lower the amount.</span>
                   <a
-                    href="https://app.uniswap.org/swap?chain=base&outputCurrency=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+                    href={`https://app.uniswap.org/swap?chain=base&outputCurrency=0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&exactField=output&exactAmount=${shortfall.toFixed(2)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 rounded-md border border-destructive/40 bg-destructive/10 px-2 py-1 font-semibold hover:bg-destructive/20 transition-colors"
                   >
-                    Top up USDC <ExternalLink className="h-3 w-3" />
+                    Top up {fmt(shortfall)} USDC <ExternalLink className="h-3 w-3" />
                   </a>
                 </>
               )}
