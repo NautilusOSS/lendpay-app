@@ -1,16 +1,9 @@
 import { useState } from "react";
-import { ArrowRight, ArrowLeft, Coins, Wallet, AlertTriangle, CheckCircle2, RefreshCw, Loader2, ExternalLink, ChevronDown } from "lucide-react";
+import { ArrowRight, ArrowLeft, Coins, Wallet, AlertTriangle, CheckCircle2, RefreshCw, Loader2, ArrowUpRight } from "lucide-react";
 import { GlowButton } from "../GlowButton";
 import { cn } from "@/lib/utils";
 import { useUsdcBalance } from "@/hooks/useUsdcBalance";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { TopUpRouteModal } from "../TopUpRouteModal";
 
 type Option = "interest" | "custom" | "full";
 
