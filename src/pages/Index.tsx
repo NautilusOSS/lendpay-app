@@ -73,6 +73,7 @@ const Index = () => {
     setStep(0);
     setAddress("");
     setAmount(0.016465);
+    setPack(null);
   };
 
   return (
@@ -96,8 +97,15 @@ const Index = () => {
             {step === 1 && <Step2Position onNext={() => goTo(2)} onBack={() => goTo(0)} />}
             {step === 2 && <Step3Repayment onNext={(a) => { setAmount(a); goTo(3); }} onBack={() => goTo(1)} />}
             {step === 3 && <Step4Connect onNext={() => goTo(4)} onBack={() => goTo(2)} />}
-            {step === 4 && <Step5Confirm amount={amount} onNext={() => goTo(5)} onBack={() => goTo(3)} />}
-            {step === 5 && <Step6Trace amount={amount} onReset={reset} />}
+            {step === 4 && (
+              <Step5Pack
+                initialPackId={pack?.id}
+                onNext={(p) => { setPack(p); goTo(5); }}
+                onBack={() => goTo(3)}
+              />
+            )}
+            {step === 5 && <Step5Confirm amount={amount} pack={pack} onNext={() => goTo(6)} onBack={() => goTo(4)} />}
+            {step === 6 && <Step6Trace amount={amount} onReset={reset} />}
           </div>
         </div>
 
