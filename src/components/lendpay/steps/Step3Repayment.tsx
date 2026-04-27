@@ -21,6 +21,7 @@ const options: { id: Option; label: string; desc: string; value: number }[] = [
 export const Step3Repayment = ({ onNext, onBack }: Props) => {
   const [selected, setSelected] = useState<Option>("interest");
   const [custom, setCustom] = useState("100");
+  const [topUpOpen, setTopUpOpen] = useState(false);
   const current = options.find((o) => o.id === selected)!;
   const amount = selected === "custom" ? Number(custom) || 0 : current.value;
 
