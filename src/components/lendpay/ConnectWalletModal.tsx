@@ -47,11 +47,50 @@ interface Props {
 
 const APPROVAL_TIMEOUT_MS = 20_000;
 
+// EIP-1193 / WalletConnect-style rejection reasons. We pick one to surface a
+// specific, actionable message instead of a generic "declined" string.
+type RejectionCode = 4001 | 4100 | 5000 | -32002;
+
+interface RejectionReason {
+  code: RejectionCode;
+  title: string;
+  message: string;
+  hint: string;
+}
+
+const REJECTION_REASONS: RejectionReason[] = [
+  {
+    code: 4001,
+    title: "Request rejected in wallet",
+    message: "You declined the connection request.",
+    hint: "Tap Connect again and approve the prompt in your wallet to continue.",
+  },
+  {
+    code: 4100,
+    title: "Account not authorized",
+    message: "The selected account hasn't authorized LendPay yet.",
+    hint: "Open your wallet, switch to the account you want to pay from, then retry.",
+  },
+  {
+    code: -32002,
+    title: "Request already pending",
+    message: "A previous connection request is still open in your wallet.",
+    hint: "Open your wallet, dismiss the pending request, then try again.",
+  },
+  {
+    code: 5000,
+    title: "Wrong network selected",
+    message: "Your wallet isn't on Base. LendPay needs Base (chain 8453) for USDC payment.",
+    hint: "Switch to Base in your wallet, then retry the connection.",
+  },
+];
+
 export const ConnectWalletModal = ({ open, onOpenChange, onConnected }: Props) => {
   const [selected, setSelected] = useState<WalletId | null>(null);
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string | null>(null);
   const [errorKind, setErrorKind] = useState<"declined" | "timeout" | null>(null);
+  const [rejection, setRejection] = useState<RejectionReason | null>(null);
 
   // Reset state whenever the modal closes
   useEffect(() => {
