@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Check, Loader2, AlertCircle, Wallet, ShieldCheck, RefreshCw, X, Clock } from "lucide-react";
+import { Check, Loader2, Wallet, ShieldCheck, RefreshCw, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ErrorCard } from "./ErrorCard";
 
 type WalletId = "walletconnect" | "metamask" | "coinbase";
 
