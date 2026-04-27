@@ -40,7 +40,7 @@ const Index = () => {
           <p className="text-muted-foreground/70">
             Powered by{" "}
             <a
-              href="https://keeperhub.xyz"
+              href="https://keeperhub.com/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary/90 font-medium hover:text-primary underline-offset-4 hover:underline transition-colors"
