@@ -1,13 +1,43 @@
 import { useState } from "react";
-import { ArrowRight, Wallet } from "lucide-react";
+import { ArrowRight, Wallet, AlertCircle } from "lucide-react";
 import { GlowButton } from "../GlowButton";
 
 interface Props {
   onNext: (address: string) => void;
 }
 
+const EVM_REGEX = /^0x[a-fA-F0-9]{40}$/;
+const ALGO_REGEX = /^[A-Z2-7]{58}$/;
+
+type AddressKind = "evm" | "algorand" | null;
+
+const detectAddress = (raw: string): AddressKind => {
+  const v = raw.trim();
+  if (EVM_REGEX.test(v)) return "evm";
+  if (ALGO_REGEX.test(v)) return "algorand";
+  return null;
+};
+
 export const Step1Address = ({ onNext }: Props) => {
   const [address, setAddress] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const trimmed = address.trim();
+  const kind = detectAddress(trimmed);
+  const isValid = kind !== null;
+
+  const handleSubmit = () => {
+    if (!trimmed) {
+      setError("Please enter a wallet address.");
+      return;
+    }
+    if (!isValid) {
+      setError("Invalid address. Use a 0x EVM address (42 chars) or an Algorand address (58 chars).");
+      return;
+    }
+    setError(null);
+    onNext(trimmed);
+  };
 
   return (
     <div className="glass-card p-8 md:p-10 animate-fade-in-up">
