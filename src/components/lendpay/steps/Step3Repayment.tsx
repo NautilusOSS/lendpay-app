@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, ArrowLeft, Coins, Wallet, AlertTriangle, CheckCircle2, RefreshCw, Loader2, ArrowUpRight } from "lucide-react";
 import { GlowButton } from "../GlowButton";
 import { cn } from "@/lib/utils";
@@ -22,6 +22,8 @@ export const Step3Repayment = ({ onNext, onBack }: Props) => {
   const [selected, setSelected] = useState<Option>("interest");
   const [custom, setCustom] = useState("100");
   const [topUpOpen, setTopUpOpen] = useState(false);
+  const [pendingRecheck, setPendingRecheck] = useState(false);
+  const awaitingReturnRef = useRef(false);
   const current = options.find((o) => o.id === selected)!;
   const amount = selected === "custom" ? Number(custom) || 0 : current.value;
 
