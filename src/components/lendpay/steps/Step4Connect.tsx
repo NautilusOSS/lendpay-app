@@ -1,8 +1,5 @@
-import { useState } from "react";
 import { ArrowRight, ArrowLeft, Link2, Check, ShieldCheck } from "lucide-react";
 import { GlowButton } from "../GlowButton";
-import { ConnectWalletModal } from "../ConnectWalletModal";
-import { ErrorInline } from "../ErrorCard";
 import { useBaseWallet } from "@/hooks/useBaseWallet";
 
 interface Props {
@@ -11,12 +8,8 @@ interface Props {
 }
 
 export const Step4Connect = ({ onNext, onBack }: Props) => {
-  const [open, setOpen] = useState(false);
-  const { wallet, status, setStatus, setConnected } = useBaseWallet();
-
-  // Continue is locked while a connection attempt is mid-flight or in an error
-  // state. It re-enables only after a successful connection.
-  const continueDisabled = !wallet || status === "error" || status === "connecting";
+  const { wallet, status, openConnectModal, disconnect } = useBaseWallet();
+  const continueDisabled = !wallet || status === "connecting";
 
   return (
     <div className="glass-card p-8 md:p-10 animate-fade-in-up">
@@ -26,7 +19,9 @@ export const Step4Connect = ({ onNext, onBack }: Props) => {
         </div>
         <div>
           <h3 className="text-lg font-semibold">Connect Payment Wallet</h3>
-          <p className="text-sm text-muted-foreground">Pay with USDC on Base. No wallet required on the destination chain.</p>
+          <p className="text-sm text-muted-foreground">
+            Pay with USDC on Base. No wallet required on the destination chain.
+          </p>
         </div>
       </div>
 
@@ -45,23 +40,27 @@ export const Step4Connect = ({ onNext, onBack }: Props) => {
         {wallet ? (
           <>
             <div className="text-sm font-semibold">{wallet.name} connected</div>
-            <div className="text-xs font-mono text-muted-foreground mt-1">{wallet.address} · Base</div>
+            <div className="text-xs font-mono text-muted-foreground mt-1 break-all max-w-xs">
+              {wallet.address} · Base
+            </div>
             <div className="mt-2 px-3 py-1 rounded-full bg-success/10 text-success text-xs border border-success/20">
               Ready to pay
             </div>
             <button
-              onClick={() => setOpen(true)}
+              onClick={disconnect}
               className="mt-3 text-xs text-muted-foreground hover:text-primary transition-colors underline-offset-4 hover:underline"
             >
-              Switch wallet
+              Disconnect
             </button>
           </>
         ) : (
           <>
             <div className="text-sm font-semibold">Choose a wallet</div>
-            <div className="text-xs text-muted-foreground mt-1">WalletConnect · MetaMask · Coinbase</div>
+            <div className="text-xs text-muted-foreground mt-1">
+              WalletConnect · MetaMask · Coinbase · Rainbow
+            </div>
             <button
-              onClick={() => setOpen(true)}
+              onClick={openConnectModal}
               className="mt-5 px-5 py-2.5 rounded-xl text-sm font-semibold border border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 hover:shadow-[0_0_20px_hsl(var(--primary)/0.4)] transition-all duration-300"
             >
               Connect Base Wallet
@@ -73,13 +72,6 @@ export const Step4Connect = ({ onNext, onBack }: Props) => {
         )}
       </div>
 
-      {status === "error" && (
-        <ErrorInline
-          className="mt-4"
-          message="Connection didn't complete. Resolve the prompt in the wallet modal to continue."
-        />
-      )}
-
       <div className="mt-8 flex items-center justify-between">
         <GlowButton variant="ghost" onClick={onBack}>
           <ArrowLeft className="h-4 w-4" /> Back
@@ -88,13 +80,6 @@ export const Step4Connect = ({ onNext, onBack }: Props) => {
           Continue <ArrowRight className="h-4 w-4" />
         </GlowButton>
       </div>
-
-      <ConnectWalletModal
-        open={open}
-        onOpenChange={setOpen}
-        onConnected={setConnected}
-        onStatusChange={setStatus}
-      />
     </div>
   );
 };

@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { Wallet, LogOut, Copy, Check, ChevronDown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ConnectWalletModal } from "./ConnectWalletModal";
 import { useBaseWallet } from "@/hooks/useBaseWallet";
 import { cn } from "@/lib/utils";
 
 export const WalletPill = () => {
-  const { wallet, status, setStatus, setConnected, disconnect } = useBaseWallet();
-  const [open, setOpen] = useState(false);
+  const { wallet, openConnectModal, disconnect } = useBaseWallet();
   const [popOpen, setPopOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -24,26 +22,18 @@ export const WalletPill = () => {
 
   if (!wallet) {
     return (
-      <>
-        <button
-          onClick={() => setOpen(true)}
-          className={cn(
-            "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full",
-            "bg-primary/10 border border-primary/40 text-primary text-xs font-semibold",
-            "hover:bg-primary/20 hover:border-primary/70 hover:shadow-[0_0_18px_hsl(var(--primary)/0.35)]",
-            "transition-all duration-300",
-          )}
-        >
-          <Wallet className="h-3.5 w-3.5" />
-          Connect wallet
-        </button>
-        <ConnectWalletModal
-          open={open}
-          onOpenChange={setOpen}
-          onConnected={setConnected}
-          onStatusChange={setStatus}
-        />
-      </>
+      <button
+        onClick={openConnectModal}
+        className={cn(
+          "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full",
+          "bg-primary/10 border border-primary/40 text-primary text-xs font-semibold",
+          "hover:bg-primary/20 hover:border-primary/70 hover:shadow-[0_0_18px_hsl(var(--primary)/0.35)]",
+          "transition-all duration-300",
+        )}
+      >
+        <Wallet className="h-3.5 w-3.5" />
+        Connect wallet
+      </button>
     );
   }
 
@@ -91,9 +81,6 @@ export const WalletPill = () => {
             Disconnect
           </button>
         </div>
-        {status === "connecting" && (
-          <div className="px-4 pb-3 text-[10px] text-muted-foreground">Reconnecting…</div>
-        )}
       </PopoverContent>
     </Popover>
   );

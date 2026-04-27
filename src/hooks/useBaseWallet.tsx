@@ -1,7 +1,7 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
-import type { ConnectionStatus } from "@/components/lendpay/ConnectWalletModal";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useAccount, useDisconnect } from "wagmi";
 
-const STORAGE_KEY = "lendpay:base-wallet";
+export type ConnectionStatus = "idle" | "connecting" | "connected" | "error";
 
 export interface StoredWallet {
   id: string;
@@ -9,71 +9,53 @@ export interface StoredWallet {
   address: string;
 }
 
-const LABEL_MAP: Record<string, string> = {
-  walletconnect: "WalletConnect",
-  metamask: "MetaMask",
-  coinbase: "Coinbase Wallet",
-};
-
-interface BaseWalletContextValue {
+interface BaseWalletValue {
   wallet: StoredWallet | null;
   status: ConnectionStatus;
+  openConnectModal: () => void;
+  disconnect: () => void;
+  // Kept for backwards compatibility with previous mock API.
   setStatus: (s: ConnectionStatus) => void;
   setConnected: (info: { wallet: string; address: string }) => void;
-  disconnect: () => void;
 }
 
-const BaseWalletContext = createContext<BaseWalletContextValue | null>(null);
+/**
+ * Thin adapter over wagmi + RainbowKit that preserves the previous
+ * `useBaseWallet` shape consumed by the onboarding step and the header pill.
+ */
+export const useBaseWallet = (): BaseWalletValue => {
+  const { address, connector, isConnected, isConnecting, isReconnecting } = useAccount();
+  const { disconnect } = useDisconnect();
+  const { openConnectModal } = useConnectModal();
 
-export const BaseWalletProvider = ({ children }: { children: ReactNode }) => {
-  const [wallet, setWallet] = useState<StoredWallet | null>(null);
-  const [status, setStatus] = useState<ConnectionStatus>("idle");
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as StoredWallet;
-        if (parsed?.address && parsed?.name) {
-          setWallet(parsed);
-          setStatus("connected");
+  const wallet: StoredWallet | null =
+    isConnected && address
+      ? {
+          id: connector?.id ?? "wallet",
+          name: connector?.name ?? "Wallet",
+          address,
         }
-      }
-    } catch {
-      /* ignore */
-    }
-  }, []);
+      : null;
 
-  const setConnected = useCallback(({ wallet: id, address }: { wallet: string; address: string }) => {
-    const next: StoredWallet = { id, name: LABEL_MAP[id] ?? "Wallet", address };
-    setWallet(next);
-    setStatus("connected");
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      /* ignore */
-    }
-  }, []);
+  const status: ConnectionStatus = isConnected
+    ? "connected"
+    : isConnecting || isReconnecting
+      ? "connecting"
+      : "idle";
 
-  const disconnect = useCallback(() => {
-    setWallet(null);
-    setStatus("idle");
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
-  return (
-    <BaseWalletContext.Provider value={{ wallet, status, setStatus, setConnected, disconnect }}>
-      {children}
-    </BaseWalletContext.Provider>
-  );
+  return {
+    wallet,
+    status,
+    openConnectModal: () => openConnectModal?.(),
+    disconnect: () => disconnect(),
+    setStatus: () => {
+      /* no-op: status is derived from wagmi */
+    },
+    setConnected: () => {
+      /* no-op: connection handled by wagmi */
+    },
+  };
 };
 
-export const useBaseWallet = () => {
-  const ctx = useContext(BaseWalletContext);
-  if (!ctx) throw new Error("useBaseWallet must be used inside BaseWalletProvider");
-  return ctx;
-};
+// Provider kept as a no-op passthrough for any existing imports.
+export const BaseWalletProvider = ({ children }: { children: React.ReactNode }) => <>{children}</>;
