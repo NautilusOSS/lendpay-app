@@ -113,16 +113,28 @@ export const Step4Connect = ({ onNext, onBack }: Props) => {
         )}
       </div>
 
+      {status === "error" && (
+        <div className="mt-4 flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs text-destructive">
+          <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+          <span>Connection didn't complete. Resolve the prompt in the wallet modal to continue.</span>
+        </div>
+      )}
+
       <div className="mt-8 flex items-center justify-between">
         <GlowButton variant="ghost" onClick={onBack}>
           <ArrowLeft className="h-4 w-4" /> Back
         </GlowButton>
-        <GlowButton onClick={onNext} disabled={!wallet}>
+        <GlowButton onClick={onNext} disabled={continueDisabled}>
           Continue <ArrowRight className="h-4 w-4" />
         </GlowButton>
       </div>
 
-      <ConnectWalletModal open={open} onOpenChange={setOpen} onConnected={handleConnected} />
+      <ConnectWalletModal
+        open={open}
+        onOpenChange={setOpen}
+        onConnected={handleConnected}
+        onStatusChange={setStatus}
+      />
     </div>
   );
 };
