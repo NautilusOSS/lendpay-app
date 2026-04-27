@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Safari pinned-tab requires a single-color, no-background SVG -->
+  <path d="M14 10 H22 V44 H38 V52 H14 Z" fill="black"/>
+  <path d="M30 10 H42 a12 12 0 0 1 0 24 H38 V26 H42 a4 4 0 0 0 0 -8 H38 V42 H30 Z" fill="black"/>
+  <path d="M32 40 H48 L48 36 L58 44 L48 52 L48 48 H32 Z" fill="black"/>
+</svg>
