@@ -35,8 +35,12 @@ const Index = () => {
           {step === 5 && <Step6Trace amount={amount} onReset={reset} />}
         </div>
 
-        <footer className="mt-16 text-center text-xs text-muted-foreground space-y-1.5">
-          <p>Powered by x402 on Base · Executes on Algorand via DorkFi</p>
+        <footer className="mt-16 text-center text-xs text-muted-foreground space-y-2">
+          <div className="flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.2em]">
+            <span className="text-brand-blue">Pay on Base</span>
+            <span className="text-muted-foreground/40">·</span>
+            <span className="text-brand-mint">Execute on Algorand</span>
+          </div>
           <p className="text-muted-foreground/70">
             Powered by{" "}
             <a
