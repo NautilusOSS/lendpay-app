@@ -7,15 +7,17 @@ import { Step2Position } from "@/components/lendpay/steps/Step2Position";
 import { Step3Repayment } from "@/components/lendpay/steps/Step3Repayment";
 import { Step4Connect } from "@/components/lendpay/steps/Step4Connect";
 import { Step5Confirm } from "@/components/lendpay/steps/Step5Confirm";
+import { Step5Pack } from "@/components/lendpay/steps/Step5Pack";
 import { Step6Trace } from "@/components/lendpay/steps/Step6Trace";
 import { checkSiteVersion } from "@/lib/versionCheck";
+import type { Pack } from "@/lib/packs";
 
 // Bump this when icons change. We notify the user once per icon version
 // so they know to hard-reload if their browser is still showing the old mark.
 const ICON_VERSION = "2026-04-27";
 const ICON_NOTICE_KEY = `lendpay:icon-notice:${ICON_VERSION}`;
 
-const STEPS = ["Address", "Position", "Amount", "Connect", "Confirm", "Execute"];
+const STEPS = ["Address", "Position", "Amount", "Connect", "Pack", "Confirm", "Execute"];
 
 const Index = () => {
   const [step, setStep] = useState(0);
