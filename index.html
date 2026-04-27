@@ -3,10 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Brand icon manifest. The ?v= query is a cache-bust token: bump it
-         (e.g. v=2026-04-28) on every deploy that ships new icon assets so
-         browsers, iOS home-screens, Android installs and Safari pinned tabs
-         refetch instead of using their long-cached copies. -->
+    <!-- Brand icon manifest. `__SITE_VERSION__` is replaced at build time by
+         the `lendpay-site-version` Vite plugin, which sources its value from
+         SITE_VERSION in src/lib/versionCheck.ts. Bump that constant on any
+         deploy that ships new icon/manifest assets and every URL below — plus
+         the in-app reload toast — invalidates in lockstep. -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=__SITE_VERSION__" />
     <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=__SITE_VERSION__" />
     <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png?v=__SITE_VERSION__" />
