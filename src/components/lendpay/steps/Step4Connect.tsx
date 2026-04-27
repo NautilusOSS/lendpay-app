@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, ArrowLeft, Link2, Check, ShieldCheck } from "lucide-react";
+import { ArrowRight, ArrowLeft, Link2, Check, ShieldCheck, AlertCircle } from "lucide-react";
 import { GlowButton } from "../GlowButton";
-import { ConnectWalletModal } from "../ConnectWalletModal";
+import { ConnectWalletModal, type ConnectionStatus } from "../ConnectWalletModal";
 
 interface Props {
   onNext: () => void;
@@ -25,6 +25,7 @@ const LABEL_MAP: Record<string, string> = {
 export const Step4Connect = ({ onNext, onBack }: Props) => {
   const [open, setOpen] = useState(false);
   const [wallet, setWallet] = useState<StoredWallet | null>(null);
+  const [status, setStatus] = useState<ConnectionStatus>("idle");
 
   // Restore last successful wallet on mount
   useEffect(() => {
@@ -32,7 +33,10 @@ export const Step4Connect = ({ onNext, onBack }: Props) => {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as StoredWallet;
-        if (parsed?.address && parsed?.name) setWallet(parsed);
+        if (parsed?.address && parsed?.name) {
+          setWallet(parsed);
+          setStatus("connected");
+        }
       }
     } catch {
       // ignore corrupted storage
@@ -42,12 +46,17 @@ export const Step4Connect = ({ onNext, onBack }: Props) => {
   const handleConnected = ({ wallet: id, address }: { wallet: string; address: string }) => {
     const next: StoredWallet = { id, name: LABEL_MAP[id] ?? "Wallet", address };
     setWallet(next);
+    setStatus("connected");
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     } catch {
       // storage may be unavailable (private mode) — connection still works for this session
     }
   };
+
+  // Continue is locked while a connection attempt is mid-flight or in an error
+  // state. It re-enables only after a successful connection.
+  const continueDisabled = !wallet || status === "error" || status === "connecting";
 
   return (
     <div className="glass-card p-8 md:p-10 animate-fade-in-up">
@@ -104,16 +113,28 @@ export const Step4Connect = ({ onNext, onBack }: Props) => {
         )}
       </div>
 
+      {status === "error" && (
+        <div className="mt-4 flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs text-destructive">
+          <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+          <span>Connection didn't complete. Resolve the prompt in the wallet modal to continue.</span>
+        </div>
+      )}
+
       <div className="mt-8 flex items-center justify-between">
         <GlowButton variant="ghost" onClick={onBack}>
           <ArrowLeft className="h-4 w-4" /> Back
         </GlowButton>
-        <GlowButton onClick={onNext} disabled={!wallet}>
+        <GlowButton onClick={onNext} disabled={continueDisabled}>
           Continue <ArrowRight className="h-4 w-4" />
         </GlowButton>
       </div>
 
-      <ConnectWalletModal open={open} onOpenChange={setOpen} onConnected={handleConnected} />
+      <ConnectWalletModal
+        open={open}
+        onOpenChange={setOpen}
+        onConnected={handleConnected}
+        onStatusChange={setStatus}
+      />
     </div>
   );
 };
