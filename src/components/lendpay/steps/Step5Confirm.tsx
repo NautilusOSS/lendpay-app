@@ -39,6 +39,16 @@ export const Step5Confirm = ({ amount, pack, onNext, onBack }: Props) => {
             <span className="text-muted-foreground">Pay with</span>
             <span className="font-semibold font-mono">USDC on Base</span>
           </div>
+          {pack && (
+            <div className="flex justify-between">
+              <span className="text-muted-foreground inline-flex items-center gap-1.5">
+                <Package className="h-3.5 w-3.5" /> Pack
+              </span>
+              <span className="font-semibold font-mono">
+                {pack.label} · {pack.amountUsdc} USDC
+              </span>
+            </div>
+          )}
           <div className="flex justify-between pt-3 border-t border-border/60">
             <span className="text-muted-foreground">Fee</span>
             <span className="font-semibold font-mono">0.05 USDC</span>
