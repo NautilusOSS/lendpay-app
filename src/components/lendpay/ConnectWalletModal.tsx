@@ -45,10 +45,13 @@ interface Props {
   onConnected: (info: { wallet: WalletId; address: string }) => void;
 }
 
+const APPROVAL_TIMEOUT_MS = 20_000;
+
 export const ConnectWalletModal = ({ open, onOpenChange, onConnected }: Props) => {
   const [selected, setSelected] = useState<WalletId | null>(null);
   const [phase, setPhase] = useState<Phase>("idle");
   const [error, setError] = useState<string | null>(null);
+  const [errorKind, setErrorKind] = useState<"declined" | "timeout" | null>(null);
 
   // Reset state whenever the modal closes
   useEffect(() => {
@@ -57,6 +60,7 @@ export const ConnectWalletModal = ({ open, onOpenChange, onConnected }: Props) =
         setSelected(null);
         setPhase("idle");
         setError(null);
+        setErrorKind(null);
       }, 200);
       return () => clearTimeout(t);
     }
@@ -65,29 +69,48 @@ export const ConnectWalletModal = ({ open, onOpenChange, onConnected }: Props) =
   const startConnect = (id: WalletId) => {
     setSelected(id);
     setError(null);
+    setErrorKind(null);
     setPhase("awaiting");
 
     // Simulate the wallet handshake: awaiting approval -> connecting -> result
-    const declined = Math.random() < 0.25; // 25% chance the mock user "declines"
+    const declined = Math.random() < 0.2; // 20% chance the mock user "declines"
+    // ~15% chance the mock approval "hangs" past the timeout
+    const willHang = !declined && Math.random() < 0.15;
+    const approvalDelay = willHang ? APPROVAL_TIMEOUT_MS + 2_000 : 1_400;
 
-    setTimeout(() => {
+    // Timeout watchdog — fires if approval doesn't arrive in time
+    const timeoutId = window.setTimeout(() => {
+      setPhase("error");
+      setErrorKind("timeout");
+      setError(
+        "We didn't receive a response from your wallet in time. Open your wallet app, check for a pending request, then try again.",
+      );
+    }, APPROVAL_TIMEOUT_MS);
+
+    window.setTimeout(() => {
+      // If the watchdog already fired, abort this handshake
+      if (approvalDelay >= APPROVAL_TIMEOUT_MS) return;
+      window.clearTimeout(timeoutId);
+
       if (declined) {
         setPhase("error");
+        setErrorKind("declined");
         setError("Connection request was rejected in your wallet. Please try again to continue.");
         return;
       }
       setPhase("connecting");
-      setTimeout(() => {
+      window.setTimeout(() => {
         const address = "0x84F2" + Math.random().toString(16).slice(2, 6).toUpperCase() + "...9e3A";
         onConnected({ wallet: id, address });
         onOpenChange(false);
       }, 900);
-    }, 1400);
+    }, approvalDelay);
   };
 
   const reset = () => {
     setPhase("idle");
     setError(null);
+    setErrorKind(null);
     setSelected(null);
   };
 
