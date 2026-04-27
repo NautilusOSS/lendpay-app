@@ -24,6 +24,9 @@ const Index = () => {
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
   const [, setAddress] = useState("");
   const [amount, setAmount] = useState(0.016465);
+  // Selected USDC pack (carries id + amount into the pay/confirm step and
+  // downstream x402 / KeeperHub workflow calls).
+  const [pack, setPack] = useState<Pack | null>(null);
 
   // One-time notice (per ICON_VERSION) that the LendPay icons have refreshed.
   // Offers a hard-reload action for browsers still serving the cached copy.
