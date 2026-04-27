@@ -12,10 +12,19 @@ const STEPS = ["Address", "Position", "Amount", "Connect", "Confirm", "Execute"]
 
 const Index = () => {
   const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState<"forward" | "backward">("forward");
   const [, setAddress] = useState("");
   const [amount, setAmount] = useState(0.016465);
 
+  // Direction-aware navigation so the transition matches user intent:
+  // forward → slide in from the right, backward → slide in from the left.
+  const goTo = (next: number) => {
+    setDirection(next >= step ? "forward" : "backward");
+    setStep(next);
+  };
+
   const reset = () => {
+    setDirection("backward");
     setStep(0);
     setAddress("");
     setAmount(0.016465);
@@ -26,13 +35,25 @@ const Index = () => {
       <Header />
       <section className="px-6 pb-20">
         <StepProgress steps={STEPS} current={step} />
-        <div className="max-w-2xl mx-auto" key={step}>
-          {step === 0 && <Step1Address onNext={(a) => { setAddress(a); setStep(1); }} />}
-          {step === 1 && <Step2Position onNext={() => setStep(2)} onBack={() => setStep(0)} />}
-          {step === 2 && <Step3Repayment onNext={(a) => { setAmount(a); setStep(3); }} onBack={() => setStep(1)} />}
-          {step === 3 && <Step4Connect onNext={() => setStep(4)} onBack={() => setStep(2)} />}
-          {step === 4 && <Step5Confirm amount={amount} onNext={() => setStep(5)} onBack={() => setStep(3)} />}
-          {step === 5 && <Step6Trace amount={amount} onReset={reset} />}
+        <div className="max-w-2xl mx-auto relative overflow-hidden">
+          {/* Re-keyed wrapper triggers the directional animation each transition.
+              `[&>*]:animate-none` cancels the static fade-in-up on step cards so
+              only the pipeline animation plays. */}
+          <div
+            key={`${step}-${direction}`}
+            className={
+              direction === "forward"
+                ? "animate-step-in-forward [&>*]:animate-none"
+                : "animate-step-in-backward [&>*]:animate-none"
+            }
+          >
+            {step === 0 && <Step1Address onNext={(a) => { setAddress(a); goTo(1); }} />}
+            {step === 1 && <Step2Position onNext={() => goTo(2)} onBack={() => goTo(0)} />}
+            {step === 2 && <Step3Repayment onNext={(a) => { setAmount(a); goTo(3); }} onBack={() => goTo(1)} />}
+            {step === 3 && <Step4Connect onNext={() => goTo(4)} onBack={() => goTo(2)} />}
+            {step === 4 && <Step5Confirm amount={amount} onNext={() => goTo(5)} onBack={() => goTo(3)} />}
+            {step === 5 && <Step6Trace amount={amount} onReset={reset} />}
+          </div>
         </div>
 
         <footer className="mt-16 text-center text-xs text-muted-foreground space-y-2">
