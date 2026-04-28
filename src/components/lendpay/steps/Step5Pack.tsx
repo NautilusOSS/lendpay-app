@@ -148,7 +148,12 @@ export const Step5Pack = ({ repayAmount, initialPackId, onNext, onBack }: Props)
         <GlowButton variant="ghost" onClick={onBack}>
           <ArrowLeft className="h-4 w-4" /> Back
         </GlowButton>
-        <GlowButton onClick={() => selected && onNext(selected)} disabled={!selected}>
+        <GlowButton
+          onClick={() => selected && onNext(selected)}
+          disabled={visible.length === 0 || !selected}
+          title={visible.length === 0 ? "Top up USDC to unlock a pack" : undefined}
+          aria-disabled={visible.length === 0 || !selected}
+        >
           Continue <ArrowRight className="h-4 w-4" />
         </GlowButton>
       </div>
