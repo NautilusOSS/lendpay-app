@@ -9,7 +9,7 @@ import { toast } from "sonner";
  * differ, we surface a toast prompting a hard reload, then clear caches
  * and persist the new token so the prompt only fires once per version.
  */
-export const SITE_VERSION = "2026-04-27";
+export const SITE_VERSION = "2026-05-02";
 const STORAGE_KEY = "lendpay:site-version";
 
 const hardReload = async () => {
