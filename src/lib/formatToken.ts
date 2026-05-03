@@ -1,3 +1,11 @@
+/** Convert fixed-point smallest units to a JS number for sliders / presets (USDC-scale safe). */
+export function bigintToUiNumber(value: bigint, decimals: number): number {
+  if (decimals < 0 || decimals > 18) return 0;
+  const base = 10n ** BigInt(decimals);
+  if (base === 0n) return 0;
+  return Number(value) / Number(base);
+}
+
 /** Format integer token amount (bigint smallest units) for display. */
 export function formatTokenAmount(amount: bigint, decimals: number, maxFractionDigits = 6): string {
   if (decimals < 0 || decimals > 36) return "0";

@@ -4,6 +4,8 @@ import {
   DORKFI_API_BASE,
   type DorkfiAlgorandMarket,
 } from "./dorkfiMarkets";
+import { bigintToUiNumber } from "./formatToken";
+import type { RepayBorrowSnapshot } from "./repaySnapshot";
 
 const INDEX_SCALE = 10n ** 18n;
 
@@ -31,7 +33,10 @@ export type DorkfiResolvedPosition = {
   market: DorkfiAlgorandMarket;
   userData: DorkfiUserDataRow;
   health: DorkfiUserHealth | null;
-  borrowUnderlying: bigint;
+  /** Total borrow using latest market borrow index when available. */
+  totalBorrowUnderlying: bigint;
+  /** Growth since `userData.borrowIndex` (index accrual). */
+  accruedInterestUnderlying: bigint;
 };
 
 type ApiEnvelope<T> = { success: boolean; data?: T; error?: string };
@@ -71,6 +76,31 @@ async function getUserHealth(userAddress: string, poolAppId: string): Promise<Do
   return body.data;
 }
 
+async function getMarketBorrowIndex(poolAppId: string, marketAppId: string): Promise<string | null> {
+  const url = `${DORKFI_API_BASE}/market-data/${DORKFI_ALGORAND_NETWORK}/${poolAppId}/${marketAppId}`;
+  const res = await fetch(url);
+  const body = (await parseJson(res)) as ApiEnvelope<{ borrowIndex: string }> | null;
+  if (!body?.success || !body.data?.borrowIndex) return null;
+  return body.data.borrowIndex;
+}
+
+/** Map resolved DorkFi position to repayment step presets (human units). */
+export function resolvedPositionToRepaySnapshot(p: DorkfiResolvedPosition): RepayBorrowSnapshot {
+  const { market, accruedInterestUnderlying, totalBorrowUnderlying } = p;
+  const full = bigintToUiNumber(totalBorrowUnderlying, market.decimals);
+  let accrued = bigintToUiNumber(accruedInterestUnderlying, market.decimals);
+  const minUnit = 1 / 10 ** market.decimals;
+  if (accrued < minUnit && full > 0) {
+    accrued = Math.min(full * 0.0001, full);
+  }
+  return {
+    repayAssetSymbol: market.symbol,
+    fullBorrow: full,
+    accruedInterest: accrued,
+    decimals: market.decimals,
+  };
+}
+
 /**
  * Returns the first USDC market where the user has on-chain borrow balance (scaled × index).
  * Indexed-only: addresses never seen on DorkFi return null.
@@ -81,10 +111,22 @@ export async function fetchDorkfiAlgorandBorrowPosition(
   for (const market of DORKFI_ALGORAND_USDC_MARKETS) {
     const userData = await getUserData(userAddress, market.poolAppId, market.marketAppId);
     if (!userData) continue;
-    const borrowUnderlying = underlyingFromScaledBorrow(userData.scaledBorrows, userData.borrowIndex);
-    if (borrowUnderlying === 0n) continue;
+    if (BigInt(userData.scaledBorrows || "0") === 0n) continue;
+    const marketBorrowIdx = await getMarketBorrowIndex(market.poolAppId, market.marketAppId);
+    const idxForTotal = marketBorrowIdx ?? userData.borrowIndex;
+    const totalBorrowUnderlying = underlyingFromScaledBorrow(userData.scaledBorrows, idxForTotal);
+    if (totalBorrowUnderlying === 0n) continue;
+    const atStoredIndex = underlyingFromScaledBorrow(userData.scaledBorrows, userData.borrowIndex);
+    const accruedInterestUnderlying =
+      totalBorrowUnderlying > atStoredIndex ? totalBorrowUnderlying - atStoredIndex : 0n;
     const health = await getUserHealth(userAddress, market.poolAppId);
-    return { market, userData, health, borrowUnderlying };
+    return {
+      market,
+      userData,
+      health,
+      totalBorrowUnderlying,
+      accruedInterestUnderlying,
+    };
   }
   return null;
 }

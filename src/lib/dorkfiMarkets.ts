@@ -48,3 +48,6 @@ export const DORKFI_ALGORAND_USDC_MARKETS: DorkfiAlgorandMarket[] = [
     tokenStandard: "asa",
   },
 ];
+
+/** Ticker for repayment UI when no market row is selected (EVM / empty / demo). */
+export const DEFAULT_DORKFI_REPAY_SYMBOL = DORKFI_ALGORAND_USDC_MARKETS[0]?.symbol ?? "USDC";

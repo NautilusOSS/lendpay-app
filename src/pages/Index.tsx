@@ -7,28 +7,26 @@ import { Step2Position } from "@/components/lendpay/steps/Step2Position";
 import { Step3Repayment } from "@/components/lendpay/steps/Step3Repayment";
 import { Step4Connect } from "@/components/lendpay/steps/Step4Connect";
 import { Step5Confirm } from "@/components/lendpay/steps/Step5Confirm";
-import { Step5Pack } from "@/components/lendpay/steps/Step5Pack";
 import { Step6Trace } from "@/components/lendpay/steps/Step6Trace";
 import { checkSiteVersion } from "@/lib/versionCheck";
-import type { Pack } from "@/lib/packs";
 import type { WalletAddressKind } from "@/lib/walletAddress";
+import { DEFAULT_DORKFI_REPAY_SYMBOL } from "@/lib/dorkfiMarkets";
+import { DEMO_REPAY_FULL, DEMO_REPAY_INTEREST, type RepayBorrowSnapshot } from "@/lib/repaySnapshot";
 
 // Bump this when icons change. We notify the user once per icon version
 // so they know to hard-reload if their browser is still showing the old mark.
 const ICON_VERSION = "2026-04-27";
 const ICON_NOTICE_KEY = `lendpay:icon-notice:${ICON_VERSION}`;
 
-const STEPS = ["Address", "Position", "Amount", "Connect", "Pack", "Confirm", "Execute"];
+const STEPS = ["Address", "Position", "Amount", "Connect", "Confirm", "Execute"];
 
 const Index = () => {
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
   const [walletAddress, setWalletAddress] = useState("");
   const [walletKind, setWalletKind] = useState<WalletAddressKind | null>(null);
-  const [amount, setAmount] = useState(0.016465);
-  // Selected USDC pack (carries id + amount into the pay/confirm step and
-  // downstream x402 / KeeperHub workflow calls).
-  const [pack, setPack] = useState<Pack | null>(null);
+  const [amount, setAmount] = useState(DEMO_REPAY_INTEREST);
+  const [borrowSnapshot, setBorrowSnapshot] = useState<RepayBorrowSnapshot | null>(null);
 
   // One-time notice (per ICON_VERSION) that the LendPay icons have refreshed.
   // Offers a hard-reload action for browsers still serving the cached copy.
@@ -75,8 +73,8 @@ const Index = () => {
     setStep(0);
     setWalletAddress("");
     setWalletKind(null);
-    setAmount(0.016465);
-    setPack(null);
+    setAmount(DEMO_REPAY_INTEREST);
+    setBorrowSnapshot(null);
   };
 
   return (
@@ -106,20 +104,43 @@ const Index = () => {
               />
             )}
             {step === 1 && walletKind !== null && (
-              <Step2Position address={walletAddress} addressKind={walletKind} onNext={() => goTo(2)} onBack={() => goTo(0)} />
+              <Step2Position
+                address={walletAddress}
+                addressKind={walletKind}
+                onNext={(snapshot) => {
+                  setBorrowSnapshot(snapshot);
+                  goTo(2);
+                }}
+                onBack={() => goTo(0)}
+              />
             )}
-            {step === 2 && <Step3Repayment onNext={(a) => { setAmount(a); goTo(3); }} onBack={() => goTo(1)} />}
+            {step === 2 && (
+              <Step3Repayment
+                borrowSnapshot={borrowSnapshot}
+                onNext={(a) => {
+                  setAmount(a);
+                  goTo(3);
+                }}
+                onBack={() => goTo(1)}
+              />
+            )}
             {step === 3 && <Step4Connect onNext={() => goTo(4)} onBack={() => goTo(2)} />}
             {step === 4 && (
-              <Step5Pack
-                repayAmount={amount}
-                initialPackId={pack?.id}
-                onNext={(p) => { setPack(p); goTo(5); }}
+              <Step5Confirm
+                amount={amount}
+                repayAssetSymbol={borrowSnapshot?.repayAssetSymbol ?? DEFAULT_DORKFI_REPAY_SYMBOL}
+                onNext={() => goTo(5)}
                 onBack={() => goTo(3)}
               />
             )}
-            {step === 5 && <Step5Confirm amount={amount} pack={pack} onNext={() => goTo(6)} onBack={() => goTo(4)} />}
-            {step === 6 && <Step6Trace amount={amount} onReset={reset} />}
+            {step === 5 && (
+              <Step6Trace
+                amount={amount}
+                repayAssetSymbol={borrowSnapshot?.repayAssetSymbol ?? DEFAULT_DORKFI_REPAY_SYMBOL}
+                preRepayBorrowBalance={borrowSnapshot?.fullBorrow ?? DEMO_REPAY_FULL}
+                onReset={reset}
+              />
+            )}
           </div>
         </div>
 

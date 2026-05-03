@@ -5,6 +5,9 @@ import { cn } from "@/lib/utils";
 
 interface Props {
   amount: number;
+  repayAssetSymbol: string;
+  /** Borrow before this repayment (from step 2 snapshot). */
+  preRepayBorrowBalance: number;
   onReset: () => void;
 }
 
@@ -17,7 +20,7 @@ const traceSteps = [
   "Confirming transaction",
 ];
 
-export const Step6Trace = ({ amount, onReset }: Props) => {
+export const Step6Trace = ({ amount, repayAssetSymbol, preRepayBorrowBalance, onReset }: Props) => {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -27,7 +30,7 @@ export const Step6Trace = ({ amount, onReset }: Props) => {
   }, [progress]);
 
   const done = progress >= traceSteps.length;
-  const newDebt = (610.016559 - amount).toFixed(6);
+  const newDebt = Math.max(0, preRepayBorrowBalance - amount).toFixed(6);
 
   return (
     <div className="glass-card p-8 md:p-10 animate-fade-in-up">
@@ -90,11 +93,15 @@ export const Step6Trace = ({ amount, onReset }: Props) => {
           <div className="mt-5 grid grid-cols-2 gap-4">
             <div className="rounded-lg bg-card/60 border border-border/60 p-3">
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Repaid</div>
-              <div className="mt-1 text-sm font-mono font-semibold">{amount} WAD</div>
+              <div className="mt-1 text-sm font-mono font-semibold">
+                {amount} {repayAssetSymbol}
+              </div>
             </div>
             <div className="rounded-lg bg-card/60 border border-border/60 p-3">
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">New Debt</div>
-              <div className="mt-1 text-sm font-mono font-semibold text-gradient">{newDebt} WAD</div>
+              <div className="mt-1 text-sm font-mono font-semibold text-gradient">
+                {newDebt} {repayAssetSymbol}
+              </div>
             </div>
           </div>
           <div className="mt-6 flex justify-end">

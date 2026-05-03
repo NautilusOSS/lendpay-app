@@ -2,14 +2,20 @@ import { useEffect, useState } from "react";
 import { ArrowRight, ArrowLeft, Activity, Loader2, AlertCircle } from "lucide-react";
 import { GlowButton } from "../GlowButton";
 import type { WalletAddressKind } from "@/lib/walletAddress";
-import { fetchDorkfiAlgorandBorrowPosition, type DorkfiResolvedPosition } from "@/lib/dorkfiApi";
+import {
+  fetchDorkfiAlgorandBorrowPosition,
+  resolvedPositionToRepaySnapshot,
+  type DorkfiResolvedPosition,
+} from "@/lib/dorkfiApi";
+import { demoRepaySnapshot, type RepayBorrowSnapshot } from "@/lib/repaySnapshot";
 import { formatTokenAmount } from "@/lib/formatToken";
-import { DORKFI_ALGORAND_NETWORK } from "@/lib/dorkfiMarkets";
+import { DORKFI_ALGORAND_NETWORK, DEFAULT_DORKFI_REPAY_SYMBOL } from "@/lib/dorkfiMarkets";
 
 interface Props {
   address: string;
   addressKind: WalletAddressKind;
-  onNext: () => void;
+  /** Borrow snapshot for repayment amounts (market totals when a position exists). */
+  onNext: (snapshot: RepayBorrowSnapshot) => void;
   onBack: () => void;
 }
 
@@ -98,7 +104,7 @@ export const Step2Position = ({ address, addressKind, onNext, onBack }: Props) =
           <GlowButton variant="ghost" onClick={onBack}>
             <ArrowLeft className="h-4 w-4" /> Back
           </GlowButton>
-          <GlowButton onClick={onNext}>
+          <GlowButton onClick={() => onNext(demoRepaySnapshot(DEFAULT_DORKFI_REPAY_SYMBOL))}>
             Continue <ArrowRight className="h-4 w-4" />
           </GlowButton>
         </div>
@@ -172,7 +178,7 @@ export const Step2Position = ({ address, addressKind, onNext, onBack }: Props) =
           <GlowButton variant="ghost" onClick={onBack}>
             <ArrowLeft className="h-4 w-4" /> Back
           </GlowButton>
-          <GlowButton onClick={onNext}>
+          <GlowButton onClick={() => onNext(demoRepaySnapshot(DEFAULT_DORKFI_REPAY_SYMBOL))}>
             Continue <ArrowRight className="h-4 w-4" />
           </GlowButton>
         </div>
@@ -180,8 +186,8 @@ export const Step2Position = ({ address, addressKind, onNext, onBack }: Props) =
     );
   }
 
-  const { market, health, borrowUnderlying } = position;
-  const debtStr = `${formatTokenAmount(borrowUnderlying, market.decimals)} ${market.symbol}`;
+  const { market, health, totalBorrowUnderlying } = position;
+  const debtStr = `${formatTokenAmount(totalBorrowUnderlying, market.decimals)} ${market.symbol}`;
   const hf = health && typeof health.healthFactor === "number" ? health.healthFactor : null;
   const badge = healthStatus(hf);
 
@@ -226,7 +232,7 @@ export const Step2Position = ({ address, addressKind, onNext, onBack }: Props) =
         <GlowButton variant="ghost" onClick={onBack}>
           <ArrowLeft className="h-4 w-4" /> Back
         </GlowButton>
-        <GlowButton onClick={onNext}>
+        <GlowButton onClick={() => onNext(resolvedPositionToRepaySnapshot(position))}>
           Continue <ArrowRight className="h-4 w-4" />
         </GlowButton>
       </div>
