@@ -11,6 +11,7 @@ import { Step5Pack } from "@/components/lendpay/steps/Step5Pack";
 import { Step6Trace } from "@/components/lendpay/steps/Step6Trace";
 import { checkSiteVersion } from "@/lib/versionCheck";
 import type { Pack } from "@/lib/packs";
+import type { WalletAddressKind } from "@/lib/walletAddress";
 
 // Bump this when icons change. We notify the user once per icon version
 // so they know to hard-reload if their browser is still showing the old mark.
@@ -22,7 +23,8 @@ const STEPS = ["Address", "Position", "Amount", "Connect", "Pack", "Confirm", "E
 const Index = () => {
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
-  const [, setAddress] = useState("");
+  const [walletAddress, setWalletAddress] = useState("");
+  const [walletKind, setWalletKind] = useState<WalletAddressKind | null>(null);
   const [amount, setAmount] = useState(0.016465);
   // Selected USDC pack (carries id + amount into the pay/confirm step and
   // downstream x402 / KeeperHub workflow calls).
@@ -71,7 +73,8 @@ const Index = () => {
   const reset = () => {
     setDirection("backward");
     setStep(0);
-    setAddress("");
+    setWalletAddress("");
+    setWalletKind(null);
     setAmount(0.016465);
     setPack(null);
   };
@@ -93,8 +96,18 @@ const Index = () => {
                 : "animate-step-in-backward [&>*]:animate-none"
             }
           >
-            {step === 0 && <Step1Address onNext={(a) => { setAddress(a); goTo(1); }} />}
-            {step === 1 && <Step2Position onNext={() => goTo(2)} onBack={() => goTo(0)} />}
+            {step === 0 && (
+              <Step1Address
+                onNext={(a, k) => {
+                  setWalletAddress(a);
+                  setWalletKind(k);
+                  goTo(1);
+                }}
+              />
+            )}
+            {step === 1 && walletKind !== null && (
+              <Step2Position address={walletAddress} addressKind={walletKind} onNext={() => goTo(2)} onBack={() => goTo(0)} />
+            )}
             {step === 2 && <Step3Repayment onNext={(a) => { setAmount(a); goTo(3); }} onBack={() => goTo(1)} />}
             {step === 3 && <Step4Connect onNext={() => goTo(4)} onBack={() => goTo(2)} />}
             {step === 4 && (

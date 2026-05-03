@@ -1,29 +1,18 @@
 import { useState } from "react";
 import { ArrowRight, Wallet, AlertCircle } from "lucide-react";
 import { GlowButton } from "../GlowButton";
+import { detectWalletAddressKind, type WalletAddressKind } from "@/lib/walletAddress";
 
 interface Props {
-  onNext: (address: string) => void;
+  onNext: (address: string, kind: WalletAddressKind) => void;
 }
-
-const EVM_REGEX = /^0x[a-fA-F0-9]{40}$/;
-const ALGO_REGEX = /^[A-Z2-7]{58}$/;
-
-type AddressKind = "evm" | "algorand" | null;
-
-const detectAddress = (raw: string): AddressKind => {
-  const v = raw.trim();
-  if (EVM_REGEX.test(v)) return "evm";
-  if (ALGO_REGEX.test(v)) return "algorand";
-  return null;
-};
 
 export const Step1Address = ({ onNext }: Props) => {
   const [address, setAddress] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const trimmed = address.trim();
-  const kind = detectAddress(trimmed);
+  const kind = detectWalletAddressKind(trimmed);
   const isValid = kind !== null;
 
   const handleSubmit = () => {
@@ -36,7 +25,7 @@ export const Step1Address = ({ onNext }: Props) => {
       return;
     }
     setError(null);
-    onNext(trimmed);
+    onNext(trimmed, kind);
   };
 
   return (
