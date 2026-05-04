@@ -98,6 +98,10 @@ export function resolvedPositionToRepaySnapshot(p: DorkfiResolvedPosition): Repa
     fullBorrow: full,
     accruedInterest: accrued,
     decimals: market.decimals,
+    poolAppId: market.poolAppId,
+    marketAppId: market.marketAppId,
+    underlyingAssetId: market.assetId,
+    nTokenId: market.nTokenId,
   };
 }
 

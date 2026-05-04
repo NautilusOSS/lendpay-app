@@ -138,6 +138,11 @@ const Index = () => {
                 amount={amount}
                 repayAssetSymbol={borrowSnapshot?.repayAssetSymbol ?? DEFAULT_DORKFI_REPAY_SYMBOL}
                 preRepayBorrowBalance={borrowSnapshot?.fullBorrow ?? DEMO_REPAY_FULL}
+                benefactorAddress={walletAddress}
+                poolAppId={borrowSnapshot?.poolAppId}
+                marketAppId={borrowSnapshot?.marketAppId}
+                nTokenId={borrowSnapshot?.nTokenId}
+                underlyingAssetId={borrowSnapshot?.underlyingAssetId}
                 onReset={reset}
               />
             )}

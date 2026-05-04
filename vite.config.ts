@@ -133,6 +133,14 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
+    /** Same-origin proxy for x402 retries on `POST /workflows/.../execute` (lendpay-backend). */
+    proxy: {
+      "/gateway": {
+        target: process.env.VITE_GATEWAY_PROXY_TARGET?.trim() || "http://127.0.0.1:3001",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/gateway/, "") || "/",
+      },
+    },
   },
   plugins: [
     react(),
