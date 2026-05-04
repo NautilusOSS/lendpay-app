@@ -19,10 +19,7 @@ interface BaseWalletValue {
   setConnected: (info: { wallet: string; address: string }) => void;
 }
 
-/**
- * Thin adapter over wagmi + RainbowKit that preserves the previous
- * `useBaseWallet` shape consumed by the onboarding step and the header pill.
- */
+/** Thin adapter over wagmi + RainbowKit for `WalletPill` and any connect UI. */
 export const useBaseWallet = (): BaseWalletValue => {
   const { address, connector, isConnected, isConnecting, isReconnecting } = useAccount();
   const { disconnect } = useDisconnect();
