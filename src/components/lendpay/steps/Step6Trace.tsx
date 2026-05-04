@@ -31,9 +31,6 @@ interface Props {
 }
 
 const traceSteps = [
-  "Position detected",
-  "Market synced",
-  "Interest calculated",
   "x402 payment confirmed (Base)",
   "Executing repayment on Algorand",
   "Confirming transaction",
@@ -283,8 +280,8 @@ export const Step6Trace = ({
         <ul className="space-y-4">
           {traceSteps.map((label, i) => {
             const isDone = done;
-            const isActive = phase === "paying" && i === 3;
-            const isPending = !done && !(phase === "paying" && i === 3);
+            const isActive = phase === "paying" && i === 0;
+            const isPending = !done && !(phase === "paying" && i === 0);
             return (
               <li key={i} className="relative flex items-center gap-4">
                 <div
