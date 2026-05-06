@@ -6,6 +6,41 @@
 const executePath = (slug: string) =>
   `/workflows/${encodeURIComponent(slug)}/execute`;
 
+/**
+ * Dashboards often store env values with wrapping quotes (`"https://…"`), which Vite inlines literally.
+ * That yields bogus path segments like `/""` → `/%22%22` when concatenated with `/workflows/…`.
+ */
+function stripWrappingQuotes(s: string): string {
+  let t = s.trim();
+  while (
+    t.length >= 2 &&
+    ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'")))
+  ) {
+    t = t.slice(1, -1).trim();
+  }
+  return t;
+}
+
+/** Returns absolute base (no trailing slash) or undefined if unset / invalid. */
+function normalizeConfiguredGatewayBase(raw: string | undefined): string | undefined {
+  if (raw == null) return undefined;
+  let s = stripWrappingQuotes(String(raw));
+  if (!s || s === '""') return undefined;
+  s = s.replace(/\/+$/, "");
+  try {
+    const href = /^https?:\/\//i.test(s) ? s : `https://${s}`;
+    const u = new URL(href);
+    let p = u.pathname;
+    p = p.replace(/\/""/g, "/").replace(/\/%22%22/gi, "/");
+    p = p.replace(/\/{2,}/g, "/");
+    if (p === "/" || p === "") p = "";
+    else if (p.endsWith("/")) p = p.slice(0, -1);
+    return `${u.origin}${p}`;
+  } catch {
+    return undefined;
+  }
+}
+
 /** Keys sorted alphabetically — match gateway `resource.url` canonical ordering for x402 verification. */
 export const PAID_BETA_SIGNUP_QUERY_KEYS = [
   "algorandAddress",
@@ -37,9 +72,9 @@ export function paidBetaSignupSearchParams(fields: PaidBetaSignupFields): URLSea
  * `VITE_GATEWAY_BASE_URL` overrides; in dev defaults to same-origin `/gateway`.
  */
 export function gatewayBaseUrl(): string {
-  const fromEnv = (import.meta.env.VITE_GATEWAY_BASE_URL as string | undefined)?.trim();
+  const fromEnv = normalizeConfiguredGatewayBase(import.meta.env.VITE_GATEWAY_BASE_URL as string | undefined);
   if (fromEnv) {
-    return fromEnv.replace(/\/+$/, "");
+    return fromEnv;
   }
   if (import.meta.env.DEV) {
     return `${globalThis.location.origin}/gateway`.replace(/\/+$/, "");
@@ -59,10 +94,10 @@ export function gatewayPaidBetaSignupExecuteUrl(
   const search = paidBetaSignupSearchParams(fields).toString();
   const pathWithQuery = search ? `${path}?${search}` : path;
 
-  const fromEnv = import.meta.env.VITE_X402_TEST_URL as string | undefined;
-  if (fromEnv?.trim()) {
+  const x402Base = normalizeConfiguredGatewayBase(import.meta.env.VITE_X402_TEST_URL as string | undefined);
+  if (x402Base) {
     try {
-      const u = new URL(fromEnv.trim());
+      const u = new URL(x402Base);
       u.pathname = path;
       u.search = search;
       return u.toString();
@@ -77,10 +112,10 @@ export function gatewayPaidBetaSignupExecuteUrl(
 /** Same path without query — for safe display (e.g. standalone intake technical line). */
 export function gatewayPaidBetaSignupExecuteBaseDisplayUrl(slug: string): string {
   const path = executePath(slug);
-  const fromEnv = import.meta.env.VITE_X402_TEST_URL as string | undefined;
-  if (fromEnv?.trim()) {
+  const x402Base = normalizeConfiguredGatewayBase(import.meta.env.VITE_X402_TEST_URL as string | undefined);
+  if (x402Base) {
     try {
-      const u = new URL(fromEnv.trim());
+      const u = new URL(x402Base);
       u.pathname = path;
       u.search = "";
       return u.toString();
