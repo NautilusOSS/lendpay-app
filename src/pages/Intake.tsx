@@ -29,7 +29,7 @@ const Intake = () => {
       <div className="max-w-xl mx-auto mt-10">
         <BetaIntakeForm
           title="Program intake"
-          description="Submit your details. A small nonrefundable signup fee of $1.00 USDC on Base (x402) completes when payment succeeds."
+          description="Submit your details. A small nonrefundable signup fee of $1.00 USDC on Base (x402) completes when payment succeeds. Beta signup does not guarantee access."
           showTechnicalDetails
         />
       </div>

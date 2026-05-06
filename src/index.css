@@ -88,6 +88,12 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
   body {
     @apply bg-background text-foreground;
     background-image:

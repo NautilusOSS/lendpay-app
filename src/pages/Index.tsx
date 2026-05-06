@@ -49,7 +49,8 @@ const Index = () => {
         </h1>
         <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
           LendPay is in <span className="text-foreground font-medium">private beta</span>. Join the waitlist with your
-          details and a small nonrefundable signup fee (USDC on Base) — settled with x402.
+          details and a small nonrefundable signup fee (USDC on Base) — settled with x402.{" "}
+          <span className="text-foreground/90">Beta signup does not guarantee access.</span>
         </p>
         <div className="mt-10 flex justify-center">
           <GlowButton
@@ -102,7 +103,7 @@ const Index = () => {
         <BetaIntakeForm
           id="beta-signup"
           title="Request beta access"
-          description="Tell us who you are and how to reach you. Completing payment confirms your spot in the queue."
+          description="Tell us who you are and how to reach you. Completing payment submits your application; it does not guarantee beta access."
         />
       </section>
 

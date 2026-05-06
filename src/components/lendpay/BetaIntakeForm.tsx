@@ -49,7 +49,7 @@ export function BetaIntakeForm({
   id,
   className,
   title = "Sign up for beta",
-  description = `Complete the form and pay ${BETA_INTAKE_PRICE_LABEL} USDC on Base (x402) as a small nonrefundable signup fee. Your details are submitted when payment succeeds.`,
+  description = `Complete the form and pay ${BETA_INTAKE_PRICE_LABEL} USDC on Base (x402) as a small nonrefundable signup fee. Your details are submitted when payment succeeds. Beta signup does not guarantee access.`,
   showTechnicalDetails = false,
 }: BetaIntakeFormProps) {
   const slug = useMemo(() => intakeWorkflowSlug(), []);
@@ -271,10 +271,11 @@ export function BetaIntakeForm({
         {phase === "done" && resultText && (
           <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 text-sm">
             <p className="flex items-center gap-2 font-medium text-primary">
-              <Check className="h-4 w-4" /> You&apos;re on the list
+              <Check className="h-4 w-4" /> Application received
             </p>
             <p className="mt-2 text-xs text-muted-foreground">
-              Thanks for joining the beta. We&apos;ll follow up on the channels you shared.
+              Thanks for applying. Beta signup does not guarantee access — we&apos;ll only reach out on the channels you
+              shared if there is a fit.
             </p>
             <pre className="mt-3 max-h-48 overflow-auto text-xs text-muted-foreground whitespace-pre-wrap break-all">
               {resultText}
@@ -286,7 +287,7 @@ export function BetaIntakeForm({
           <p className="text-xs text-muted-foreground">
             Beta signup includes a small nonrefundable signup fee of{" "}
             <span className="text-foreground font-medium">{BETA_INTAKE_PRICE_LABEL} USDC</span> on Base (configured
-            listing price must match).
+            listing price must match). Paying does not guarantee beta access.
           </p>
           <GlowButton
             onClick={() => void submit()}
@@ -294,7 +295,7 @@ export function BetaIntakeForm({
             loading={phase === "submitting"}
             className="shrink-0"
           >
-            Pay {BETA_INTAKE_PRICE_LABEL} & join beta
+            Pay {BETA_INTAKE_PRICE_LABEL} & submit
           </GlowButton>
         </div>
 
@@ -304,7 +305,7 @@ export function BetaIntakeForm({
           </p>
         )}
         {!isConnected && (
-          <p className="text-xs text-muted-foreground">Connect a wallet (top right) to pay and complete signup.</p>
+          <p className="text-xs text-muted-foreground">Connect a wallet to pay and complete signup.</p>
         )}
       </div>
     </section>

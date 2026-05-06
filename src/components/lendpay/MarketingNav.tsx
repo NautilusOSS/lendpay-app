@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { LendPayLogo } from "@/components/lendpay/Logo";
-import { WalletPill } from "@/components/lendpay/WalletPill";
+import { Button } from "@/components/ui/button";
 
 export function MarketingNav() {
   return (
@@ -24,13 +24,9 @@ export function MarketingNav() {
         </Link>
 
         <nav className="flex items-center gap-2 sm:gap-4">
-          <a
-            href="#beta-signup"
-            className="text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider sm:normal-case sm:tracking-normal"
-          >
-            Sign up
-          </a>
-          <WalletPill />
+          <Button variant="default" size="sm" className="rounded-xl text-xs sm:text-sm font-semibold" asChild>
+            <a href="#beta-signup">Request access</a>
+          </Button>
         </nav>
       </div>
     </header>
