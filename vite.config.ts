@@ -140,7 +140,7 @@ export default defineConfig(({ mode }) => ({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/gateway/, "") || "/",
       },
-      /** Same-origin proxy for x402 retries on paid intake `POST /api/mcp/workflows/…/call`. */
+      /** Optional same-origin proxy to KeeperHub app origin (legacy MCP paths). */
       "/keeperhub": {
         target: "https://app.keeperhub.com",
         changeOrigin: true,
