@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { LendPayLogo } from "@/components/lendpay/Logo";
-import { WalletPill } from "@/components/lendpay/WalletPill";
 import { BetaIntakeForm } from "@/components/lendpay/BetaIntakeForm";
 
 /**
@@ -18,11 +17,8 @@ const Intake = () => {
           <ArrowLeft className="h-4 w-4" />
           Home
         </Link>
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl bg-card/80 border border-border/60 flex items-center justify-center">
-            <LendPayLogo className="h-5 w-5" />
-          </div>
-          <WalletPill />
+        <div className="h-9 w-9 rounded-xl bg-card/80 border border-border/60 flex items-center justify-center">
+          <LendPayLogo className="h-5 w-5" />
         </div>
       </header>
 

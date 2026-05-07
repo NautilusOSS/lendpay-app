@@ -3,12 +3,14 @@ import { Check, ClipboardList } from "lucide-react";
 import { useAccount, useChainId, usePublicClient, useWalletClient } from "wagmi";
 import { base } from "wagmi/chains";
 import { GlowButton } from "@/components/lendpay/GlowButton";
+import { WalletPill } from "@/components/lendpay/WalletPill";
 import {
   gatewayPaidBetaSignupExecuteBaseDisplayUrl,
   gatewayPaidBetaSignupExecuteUrl,
   type PaidBetaSignupFields,
 } from "@/lib/keeperhubWorkflow";
 import { createX402Fetch, formatX402ClientError, tryDecodePaymentFromResponse } from "@/lib/x402";
+import { cn } from "@/lib/utils";
 
 /** Shown in UI copy; must match `amount` sent on the workflow execute URL (gateway listing). */
 export const BETA_INTAKE_PRICE_LABEL = "$1.00";
@@ -60,7 +62,6 @@ export function BetaIntakeForm({
   const executeBaseDisplayUrl = useMemo(() => gatewayPaidBetaSignupExecuteBaseDisplayUrl(slug), [slug]);
 
   const [email, setEmail] = useState("");
-  const [baseAddress, setBaseAddress] = useState("");
   const [algorandAddress, setAlgorandAddress] = useState("");
   const [discord, setDiscord] = useState("");
   const [telegram, setTelegram] = useState("");
@@ -83,11 +84,6 @@ export function BetaIntakeForm({
     }
   }, [onBaseMainnet, walletClient, publicClient]);
 
-  const prefillBase = useCallback(() => {
-    const a = address?.trim();
-    if (a && isValidBaseAddress(a)) setBaseAddress(a);
-  }, [address]);
-
   const validate = useCallback((): IntakePayload | null => {
     const em = email.trim();
     if (!em) {
@@ -99,7 +95,15 @@ export function BetaIntakeForm({
       return null;
     }
 
-    const baseAddr = baseAddress.trim();
+    const baseAddr = (address ?? "").trim();
+    if (!isConnected || !baseAddr) {
+      setFormError("Connect a wallet so your Base EVM address is included.");
+      return null;
+    }
+    if (!isValidBaseAddress(baseAddr)) {
+      setFormError("Connected wallet address is not a valid EVM address.");
+      return null;
+    }
     const algo = algorandAddress.trim();
     const disc = discord.trim();
     const tel = telegram.trim();
@@ -128,7 +132,7 @@ export function BetaIntakeForm({
       algorandAddress: algo,
       amount: BETA_INTAKE_AMOUNT_QUERY,
     };
-  }, [email, baseAddress, algorandAddress, discord, telegram]);
+  }, [email, address, isConnected, algorandAddress, discord, telegram]);
 
   const submit = useCallback(async () => {
     const payload = validate();
@@ -229,25 +233,23 @@ export function BetaIntakeForm({
         </div>
 
         <div>
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <label className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
               Base address (EVM)
             </label>
-            {address && (
-              <button
-                type="button"
-                onClick={prefillBase}
-                className="text-[10px] uppercase tracking-wider text-primary hover:underline"
-              >
-                Use connected wallet
-              </button>
-            )}
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <WalletPill />
+            </div>
           </div>
           <input
-            value={baseAddress}
-            onChange={(e) => setBaseAddress(e.target.value)}
-            placeholder="0x…"
-            className={inputClass}
+            readOnly
+            value={address ?? ""}
+            placeholder="Connect wallet — your address appears here"
+            className={cn(
+              inputClass,
+              "cursor-default bg-muted/25 text-foreground/90",
+              !address && "text-muted-foreground",
+            )}
           />
         </div>
 

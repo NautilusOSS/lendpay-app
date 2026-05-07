@@ -23,6 +23,7 @@ export const WalletPill = () => {
   if (!wallet) {
     return (
       <button
+        type="button"
         onClick={openConnectModal}
         className={cn(
           "inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full",
@@ -32,7 +33,7 @@ export const WalletPill = () => {
         )}
       >
         <Wallet className="h-3.5 w-3.5" />
-        Connect wallet
+        Connect
       </button>
     );
   }
@@ -40,48 +41,57 @@ export const WalletPill = () => {
   const short = `${wallet.address.slice(0, 6)}…${wallet.address.slice(-4)}`;
 
   return (
-    <Popover open={popOpen} onOpenChange={setPopOpen}>
-      <PopoverTrigger asChild>
-        <button
-          className={cn(
-            "inline-flex items-center gap-2 px-3 py-1.5 rounded-full",
-            "bg-card/60 backdrop-blur-md border border-border/60 text-xs font-medium",
-            "hover:border-primary/50 transition-all duration-200",
-          )}
-        >
-          <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
-          <span className="font-mono text-foreground">{short}</span>
-          <ChevronDown className="h-3 w-3 text-muted-foreground" />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent align="end" className="w-64 p-0 glass-card border-border/60">
-        <div className="p-4 border-b border-border/50">
-          <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-            <span className="h-1.5 w-1.5 rounded-full bg-success" />
-            {wallet.name} · Base
+    <div className="inline-flex items-center gap-2 flex-wrap justify-end">
+      <Popover open={popOpen} onOpenChange={setPopOpen}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className={cn(
+              "inline-flex items-center gap-2 px-3 py-1.5 rounded-full",
+              "bg-card/60 backdrop-blur-md border border-border/60 text-xs font-medium",
+              "hover:border-primary/50 transition-all duration-200",
+            )}
+          >
+            <span className="h-2 w-2 rounded-full bg-success animate-pulse" />
+            <span className="font-mono text-foreground">{short}</span>
+            <ChevronDown className="h-3 w-3 text-muted-foreground" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent align="end" className="w-64 p-0 glass-card border-border/60">
+          <div className="p-4 border-b border-border/50">
+            <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-success" />
+              {wallet.name} · Base
+            </div>
+            <div className="mt-2 text-xs font-mono break-all text-foreground/90">{wallet.address}</div>
           </div>
-          <div className="mt-2 text-xs font-mono break-all text-foreground/90">{wallet.address}</div>
-        </div>
-        <div className="p-2 flex flex-col">
-          <button
-            onClick={handleCopy}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs hover:bg-secondary/60 transition-colors text-left"
-          >
-            {copied ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
-            {copied ? "Copied" : "Copy address"}
-          </button>
-          <button
-            onClick={() => {
-              disconnect();
-              setPopOpen(false);
-            }}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs hover:bg-destructive/10 hover:text-destructive transition-colors text-left"
-          >
-            <LogOut className="h-3.5 w-3.5" />
-            Disconnect
-          </button>
-        </div>
-      </PopoverContent>
-    </Popover>
+          <div className="p-2">
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="flex w-full items-center gap-2 px-3 py-2 rounded-lg text-xs hover:bg-secondary/60 transition-colors text-left"
+            >
+              {copied ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
+              {copied ? "Copied" : "Copy address"}
+            </button>
+          </div>
+        </PopoverContent>
+      </Popover>
+      <button
+        type="button"
+        onClick={() => {
+          disconnect();
+          setPopOpen(false);
+        }}
+        className={cn(
+          "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold",
+          "border border-border/60 text-muted-foreground hover:text-destructive hover:border-destructive/40 hover:bg-destructive/10",
+          "transition-colors duration-200",
+        )}
+      >
+        <LogOut className="h-3.5 w-3.5" />
+        Disconnect
+      </button>
+    </div>
   );
 };
